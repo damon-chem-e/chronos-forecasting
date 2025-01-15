@@ -50,16 +50,6 @@ from chronos import ChronosConfig, ChronosTokenizer
 
 app = typer.Typer(pretty_exceptions_enable=False)
 
-
-class TrainerDistLS(Trainer):
-    def __init__(self, train_dataset, eval_dataset, boundaries, variance, *args, **kwargs):
-        super().__init__(train_dataset=train_dataset, eval_dataset=eval_dataset, *args, **kwargs)
-        
-        self.distls = DistLS(boundaries=boundaries, variance=variance)
-        
-        
-
-
 def is_main_process() -> bool:
     """
     Check if we're on the main process.
@@ -663,9 +653,9 @@ def main(
 
     distls = None
     tokenizer = chronos_config.create_tokenizer()
-    boundaries = tokenizer.closed_boundaries
     
     if use_distls:
+        boundaries = tokenizer.closed_boundaries
         distls = DistLS(boundaries=boundaries, 
                         variance=distls_variance)
 
@@ -679,7 +669,7 @@ def main(
         model_type=model_type,
         imputation_method=LastValueImputation() if model_type == "causal" else None,
         mode="training",
-        distls=distls
+        distls=distls if use_distls else None
     ).shuffle(shuffle_buffer_length=shuffle_buffer_length)
 
     # Define training args
