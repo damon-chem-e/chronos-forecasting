@@ -66,6 +66,18 @@ class ChronosTokenizer:
     which concrete classes must implement.
     """
     
+    @property
+    def closed_boundaries(self):
+        """
+        Get closed boundaries for use with distributional label smoothing.
+
+        Returns
+        -------
+        boundaries
+            torch.Tensor
+        """
+        raise NotImplementedError()
+
     def context_input_transform(
         self,
         context: torch.Tensor,
@@ -179,6 +191,10 @@ class MeanScaleUniformBins(ChronosTokenizer):
             self.centers[:-1] + diffs / 2,     
             self.centers[-1:] + diffs[-1:] / 2
         ])
+        
+    @property
+    def closed_boundaries(self):
+        return self.closed_boundaries
 
     def _input_transform(
         self, context: torch.Tensor, scale: Optional[torch.Tensor] = None
