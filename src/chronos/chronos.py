@@ -186,7 +186,7 @@ class MeanScaleUniformBins(ChronosTokenizer):
         
         # Calculate closed boundaries to use with distributional label smoothing
         diffs = self.centers[1:] - self.centers[:-1]
-        self.closed_boundaries = torch.cat([
+        self._closed_boundaries = torch.cat([
             self.centers[:1] - diffs[:1] / 2,  
             self.centers[:-1] + diffs / 2,     
             self.centers[-1:] + diffs[-1:] / 2
@@ -194,7 +194,7 @@ class MeanScaleUniformBins(ChronosTokenizer):
         
     @property
     def closed_boundaries(self):
-        return self.closed_boundaries
+        return self._closed_boundaries
 
     def _input_transform(
         self, context: torch.Tensor, scale: Optional[torch.Tensor] = None
