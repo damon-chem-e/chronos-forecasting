@@ -44,10 +44,20 @@ from gluonts.transform import (
     LastValueImputation,
 )
 
+from distls import DistLS
 from chronos import ChronosConfig, ChronosTokenizer
 
 
 app = typer.Typer(pretty_exceptions_enable=False)
+
+
+class TrainerDistLS(Trainer):
+    def __init__(self, train_dataset, eval_dataset, boundaries, variance, *args, **kwargs):
+        super().__init__(train_dataset=train_dataset, eval_dataset=eval_dataset, *args, **kwargs)
+        
+        self.distls = DistLS(boundaries=boundaries, variance=variance)
+        
+        
 
 
 def is_main_process() -> bool:
@@ -308,6 +318,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         imputation_method: Optional[MissingValueImputation] = None,
         mode: str = "training",
         np_dtype=np.float32,
+        distls: DistLS = None
     ) -> None:
         super().__init__()
 
@@ -326,6 +337,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         self.imputation_method = imputation_method or LeavesMissingValues()
         self.mode = mode
         self.np_dtype = np_dtype
+        self.distls = distls
 
     def preprocess_entry(self, entry: dict, mode: str) -> dict:
         entry = {f: entry[f] for f in ["start", "target"]}
@@ -399,6 +411,10 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         future_target = torch.tensor(entry["future_target"]).unsqueeze(0)
         labels, labels_mask = self.tokenizer.label_input_transform(future_target, scale)
         labels[labels_mask == 0] = -100
+        
+        # Apply distributional label smoothing
+        if self.distls is not None:
+            labels = self.distls.precompute_probs(labels)
 
         if self.model_type == "causal":
             # The InstanceSplitter pads time series on the left to be equal to the
@@ -504,6 +520,8 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
 def main(
     training_data_paths: str,
     probability: Optional[str] = None,
+    use_distls: bool = True,
+    distls_variance: float = 1.0,
     context_length: int = 512,
     prediction_length: int = 64,
     min_past: int = 64,
@@ -643,16 +661,25 @@ def main(
     # Add extra items to model config so that it's saved in the ckpt
     model.config.chronos_config = chronos_config.__dict__
 
+    distls = None
+    tokenizer = chronos_config.create_tokenizer()
+    boundaries = tokenizer.closed_boundaries
+    
+    if use_distls:
+        distls = DistLS(boundaries=boundaries, 
+                        variance=distls_variance)
+
     shuffled_train_dataset = ChronosDataset(
         datasets=train_datasets,
         probabilities=probability,
-        tokenizer=chronos_config.create_tokenizer(),
+        tokenizer=tokenizer,
         context_length=context_length,
         prediction_length=prediction_length,
         min_past=min_past,
         model_type=model_type,
         imputation_method=LastValueImputation() if model_type == "causal" else None,
         mode="training",
+        distls=distls
     ).shuffle(shuffle_buffer_length=shuffle_buffer_length)
 
     # Define training args
@@ -693,7 +720,7 @@ def main(
         save_training_info(
             output_dir / "checkpoint-final", training_config=raw_training_config
         )
-
+        
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
