@@ -672,7 +672,7 @@ def main(
         distls = DistLS(boundaries=tokenizer.boundaries, 
                         variance=distls_variance,
                         special_tokens=[pad_token_id, eos_token_id, -100])
-        log_on_main(f"Distls special boundaries: " + str(distls.special_boundaries.shape), logger)
+        log_on_main(f"Distls special boundaries: " + str(distls.boundaries.shape), logger)
         log_on_main(f"Pre distls boundaries: " + str(tokenizer.boundaries.shape), logger)
 
     shuffled_train_dataset = ChronosDataset(
