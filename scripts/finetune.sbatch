@@ -6,8 +6,6 @@
 #SBATCH --gres=gpu:1
 #SBATCH --mem=16GB
 
-module load anaconda3/2023.07
-
 # Function to add directories to the PATH
 pathadd() {
     if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
@@ -16,6 +14,7 @@ pathadd() {
 }
 pathadd "/home/adewinmb/.local/bin"
 
+module load anaconda3/2023.07
 source /home/adewinmb/.bashrc
 source activate finetune
 
