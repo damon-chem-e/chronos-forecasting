@@ -400,8 +400,12 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             past_target
         )
         future_target = torch.tensor(entry["future_target"]).unsqueeze(0)
-        labels, labels_mask = self.tokenizer.label_input_transform(future_target, scale)
+        print("1: ", future_target)
+        # labels, labels_mask = self.tokenizer.label_input_transform(future_target, scale)
+        labels, labels_mask = self.tokenizer.non_quantized_label_input_transform(future_target, scale)
+        print("2: ", labels)
         labels[labels_mask == 0] = -100
+        print("3: ", labels)
         
         # Apply distributional label smoothing
         if self.distls is not None:
@@ -411,9 +415,9 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             # Save every 50th label tensor before precompute_probs
             if self.counter % 50 == 0:
                 with open('labels_before.pkl', 'ab') as f:
-                    pickle.dump(labels.detach().cpu(), f)
+                    pickle.dump(future_target.detach().cpu(), f)
                 
-            labels = self.distls.precompute_probs(labels)
+            labels = self.distls.precompute_probs(future_target)
             
             # Save every 50th label tensor after precompute_probs
             if self.counter % 50 == 0:
@@ -663,7 +667,7 @@ def main(
         top_p=top_p,
     )
 
-    # Add extra items to model config so that it's saved in the ckpt
+    # Add extra items to model config so that it's saved in the checkpoint
     model.config.chronos_config = chronos_config.__dict__
 
     distls = None
@@ -672,8 +676,6 @@ def main(
         distls = DistLS(boundaries=tokenizer.boundaries, 
                         variance=distls_variance,
                         special_tokens=[pad_token_id, eos_token_id, -100])
-        log_on_main(f"Distls special boundaries: " + str(distls.boundaries.shape), logger)
-        log_on_main(f"Pre distls boundaries: " + str(tokenizer.boundaries.shape), logger)
 
     shuffled_train_dataset = ChronosDataset(
         datasets=train_datasets,

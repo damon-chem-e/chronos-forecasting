@@ -15,13 +15,9 @@ class DistLS(torch.nn.Module):
         """
         super(DistLS, self).__init__()
         self.variance = variance
+        self.boundaries = boundaries
+        print(boundaries) # TODO: Make sure this has infinite bounds
         self.special_tokens = special_tokens
-        
-        boundaries = torch.tensor(boundaries, dtype=torch.float32)
-        self.boundaries = torch.cat([ # Bins for special tokens are added to the left.
-            torch.arange(boundaries[0] - len(special_tokens), boundaries[0]),
-            boundaries
-        ])
         self.bin_edges = list(zip(self.boundaries[:-1], self.boundaries[1:]))
 
     def precompute_probs(self, labels: torch.Tensor) -> torch.Tensor:
@@ -30,8 +26,8 @@ class DistLS(torch.nn.Module):
         N = batch size, C = num classes, d = arbitrary dimension.
 
         Args:
-            labels (torch.Tensor): Labels including special tokens (ex. PAD, EOS) 
-                and quantized and in shape [], [N], or [N, d_1, d_2, ..., d_K].
+            labels (torch.Tensor): Non-quantized labels including special tokens 
+                (ex. PAD, EOS) in shape [], [N], or [N, d_1, d_2, ..., d_K].
 
         Returns:
             torch.Tensor: Class probabilities including special tokens 
@@ -50,20 +46,23 @@ class DistLS(torch.nn.Module):
 
         # Use normal distribution around non-pad tokens
         non_pad_labels = flat_labels[~pad_mask]
+        probs = torch.zeros((len(flat_labels), len(self.special_tokens) + len(self.bin_edges)))
         if len(non_pad_labels) > 0:
             cdf_upper = norm.cdf(self.boundaries[1:], loc=non_pad_labels[:, None], scale=self.variance)
             cdf_lower = norm.cdf(self.boundaries[:-1], loc=non_pad_labels[:, None], scale=self.variance)
             probs = torch.zeros((len(flat_labels), len(self.bin_edges)))
             probs[~pad_mask] = torch.tensor(cdf_upper - cdf_lower, dtype=torch.float32)
+            probs = torch.cat([
+                torch.zeros((len(flat_labels), len(self.special_tokens))), probs], dim=1
+            )
 
         # Use degenerate distribution around pad tokens
         for is_pad, pad_idx in pad_indices:
             probs[is_pad, pad_idx] = 1.0
 
         # Reshape the result to match the expected output shape
-        result_shape = (*labels.shape, len(self.bin_edges))
+        result_shape = (*labels.shape, len(self.bin_edges) + len(self.special_tokens))
         result = probs.view(result_shape)
         result = result.permute(0, -1, *range(1, result.ndim-1))  # Move new dimension C to be the 2nd dimension
 
         return result
-    

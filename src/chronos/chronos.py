@@ -152,6 +152,11 @@ class ChronosTokenizer:
             containing forecasted sample paths.
         """
         raise NotImplementedError()
+    
+    def non_quantized_label_input_transform(
+        self, label: torch.Tensor, scale: torch.Tensor
+    ) -> Tuple:
+        raise NotImplementedError()
 
 
 class MeanScaleUniformBins(ChronosTokenizer):
@@ -229,6 +234,22 @@ class MeanScaleUniformBins(ChronosTokenizer):
             )
 
         return token_ids, attention_mask, scale
+
+    def non_quantized_label_input_transform(
+        self, label: torch.Tensor, scale: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        length = label.shape[-1]
+
+        assert length == self.config.prediction_length
+        token_ids, attention_mask, _ = self._input_transform(context=label, scale=scale)
+        print("4: ", token_ids)
+
+        if self.config.use_eos_token:
+            label, attention_mask = self._append_eos_token(
+                token_ids=label, attention_mask=attention_mask
+            )
+            
+        return label, attention_mask
 
     def label_input_transform(
         self, label: torch.Tensor, scale: torch.Tensor
