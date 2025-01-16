@@ -13,6 +13,7 @@ from copy import deepcopy
 from pathlib import Path
 from functools import partial
 from typing import List, Iterator, Optional, Dict
+import pickle
 
 import typer
 from typer_config import use_yaml_config
@@ -404,9 +405,15 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         
         # Apply distributional label smoothing
         if self.distls is not None:
-            log_on_main("Label shape before probs: " + str(labels.shape), logger)
             labels = self.distls.precompute_probs(labels)
-            log_on_main("Label shape after probs: " + str(labels.shape), logger)
+
+            # Save every 50th label tensor after precompute_probs
+            if not hasattr(self, 'counter'):
+                self.counter = 0
+            if self.counter % 50 == 0:
+                with open('labels_after.pkl', 'ab') as f:
+                    pickle.dump(labels.detach().cpu(), f)
+            self.counter += 1
 
         if self.model_type == "causal":
             # The InstanceSplitter pads time series on the left to be equal to the

@@ -6,7 +6,7 @@ class DistLS(torch.nn.Module):
     """Distributional Label Smoothing centered on true values."""
     
     def __init__(self, boundaries: torch.Tensor, variance: float):
-        """Create a DistLS object. N = batch size, C = num classes, d = arbitrary dimension.
+        """Create a DistLS object.
 
         Args:
             boundaries (torch.Tensor): Boundaries between each bin.
@@ -21,6 +21,7 @@ class DistLS(torch.nn.Module):
     def precompute_probs(self, labels: torch.Tensor) -> torch.Tensor:
         """Precompute probabilities for each class. Transforms labels of shape 
         [], [N], or [N, d_1, d_2, ..., d_K] to shape [C], [N, C], or [N, C, d_1, d_2, ..., d_K] respectively.
+        N = batch size, C = num classes, d = arbitrary dimension.
 
         Args:
             labels (torch.Tensor): Quantized and in shape [], [N], or [N, d_1, d_2, ..., d_K].
