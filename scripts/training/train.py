@@ -405,11 +405,17 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         
         # Apply distributional label smoothing
         if self.distls is not None:
-            labels = self.distls.precompute_probs(labels)
-
-            # Save every 50th label tensor after precompute_probs
             if not hasattr(self, 'counter'):
                 self.counter = 0
+                
+            # Save every 50th label tensor before precompute_probs
+            if self.counter % 50 == 0:
+                with open('labels_before.pkl', 'ab') as f:
+                    pickle.dump(labels.detach().cpu(), f)
+                
+            labels = self.distls.precompute_probs(labels)
+            
+            # Save every 50th label tensor after precompute_probs
             if self.counter % 50 == 0:
                 with open('labels_after.pkl', 'ab') as f:
                     pickle.dump(labels.detach().cpu(), f)
