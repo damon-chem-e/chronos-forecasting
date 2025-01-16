@@ -404,9 +404,9 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         
         # Apply distributional label smoothing
         if self.distls is not None:
-            print("before probs: ", labels.shape)
+            log_on_main("Label shape before probs: " + str(labels.shape), logger)
             labels = self.distls.precompute_probs(labels)
-            print("after probs: ", labels.shape)
+            log_on_main("Label shape after probs: " + str(labels.shape), logger)
 
         if self.model_type == "causal":
             # The InstanceSplitter pads time series on the left to be equal to the
