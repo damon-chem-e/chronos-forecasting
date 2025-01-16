@@ -670,7 +670,8 @@ def main(
     tokenizer = chronos_config.create_tokenizer()
     if use_distls:
         distls = DistLS(boundaries=tokenizer.boundaries, 
-                        variance=distls_variance)
+                        variance=distls_variance,
+                        special_tokens=[pad_token_id, eos_token_id, -100])
 
     shuffled_train_dataset = ChronosDataset(
         datasets=train_datasets,
