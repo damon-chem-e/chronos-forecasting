@@ -18,11 +18,11 @@ class DistLS(torch.nn.Module):
         self.special_tokens = special_tokens
         
         boundaries = torch.tensor(boundaries, dtype=torch.float32)
-        self.bin_edges = list(zip(boundaries[:-1], boundaries[1:]))
-        self.special_boundaries = torch.cat([ # Bins for special tokens are added to the left.
+        self.boundaries = torch.cat([ # Bins for special tokens are added to the left.
             torch.arange(boundaries[0] - len(special_tokens), boundaries[0]),
             boundaries
         ])
+        self.bin_edges = list(zip(self.boundaries[:-1], self.boundaries[1:]))
 
     def precompute_probs(self, labels: torch.Tensor) -> torch.Tensor:
         """Precompute probabilities for each class. Transforms labels of shape 
@@ -51,8 +51,8 @@ class DistLS(torch.nn.Module):
         # Use normal distribution around non-pad tokens
         non_pad_labels = flat_labels[~pad_mask]
         if len(non_pad_labels) > 0:
-            cdf_upper = norm.cdf(self.special_boundaries[1:], loc=non_pad_labels[:, None], scale=self.variance)
-            cdf_lower = norm.cdf(self.special_boundaries[:-1], loc=non_pad_labels[:, None], scale=self.variance)
+            cdf_upper = norm.cdf(self.boundaries[1:], loc=non_pad_labels[:, None], scale=self.variance)
+            cdf_lower = norm.cdf(self.boundaries[:-1], loc=non_pad_labels[:, None], scale=self.variance)
             probs = torch.zeros((len(flat_labels), len(self.bin_edges)))
             probs[~pad_mask] = torch.tensor(cdf_upper - cdf_lower, dtype=torch.float32)
 
