@@ -404,7 +404,9 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         
         # Apply distributional label smoothing
         if self.distls is not None:
+            print("before probs: ", labels.shape)
             labels = self.distls.precompute_probs(labels)
+            print("after probs: ", labels.shape)
 
         if self.model_type == "causal":
             # The InstanceSplitter pads time series on the left to be equal to the
@@ -653,10 +655,8 @@ def main(
 
     distls = None
     tokenizer = chronos_config.create_tokenizer()
-    
     if use_distls:
-        boundaries = tokenizer.closed_boundaries
-        distls = DistLS(boundaries=boundaries, 
+        distls = DistLS(boundaries=tokenizer.boundaries, 
                         variance=distls_variance)
 
     shuffled_train_dataset = ChronosDataset(
