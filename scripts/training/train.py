@@ -669,10 +669,10 @@ def main(
     distls = None
     tokenizer = chronos_config.create_tokenizer()
     if use_distls:
+        log_on_main(f"Pre distls boundaries: " + str(tokenizer.boundaries.shape), logger)
         distls = DistLS(boundaries=tokenizer.boundaries, 
                         variance=distls_variance,
                         special_tokens=[pad_token_id, eos_token_id, -100])
-        log_on_main(f"Pre distls boundaries: " + str(tokenizer.boundaries.shape), logger)
         log_on_main(f"Distls special boundaries: " + str(distls.boundaries.shape), logger)
         log_on_main(f"Special tokens: " + str(distls.special_tokens), logger)
 

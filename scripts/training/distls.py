@@ -14,6 +14,7 @@ class DistLS(torch.nn.Module):
                 For example, [0, 1, -100] which represents PAD, EOS (end of sequence), and attention mask tokens.
         """
         super(DistLS, self).__init__()
+        print("Constructor started")
         self.variance = variance
         self.special_tokens = special_tokens
         
@@ -22,6 +23,7 @@ class DistLS(torch.nn.Module):
             torch.arange(boundaries[0] - len(special_tokens), boundaries[0]),
             boundaries
         ])
+        print("Constructor here")
         self.bin_edges = list(zip(self.boundaries[:-1], self.boundaries[1:]))
 
     def precompute_probs(self, labels: torch.Tensor) -> torch.Tensor:
