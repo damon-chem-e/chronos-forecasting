@@ -14,16 +14,9 @@ class DistLS(torch.nn.Module):
                 For example, [0, 1, -100] which represents PAD, EOS (end of sequence), and attention mask tokens.
         """
         super(DistLS, self).__init__()
-        print("Constructor started")
         self.variance = variance
+        self.boundaries = boundaries
         self.special_tokens = special_tokens
-        
-        boundaries = torch.tensor(boundaries, dtype=torch.float32)
-        self.boundaries = torch.cat([ # Bins for special tokens are added to the left.
-            torch.arange(boundaries[0] - len(special_tokens), boundaries[0]),
-            boundaries
-        ])
-        print("Constructor here")
         self.bin_edges = list(zip(self.boundaries[:-1], self.boundaries[1:]))
 
     def precompute_probs(self, labels: torch.Tensor) -> torch.Tensor:
@@ -57,6 +50,9 @@ class DistLS(torch.nn.Module):
             cdf_lower = norm.cdf(self.boundaries[:-1], loc=non_pad_labels[:, None], scale=self.variance)
             probs = torch.zeros((len(flat_labels), len(self.bin_edges)))
             probs[~pad_mask] = torch.tensor(cdf_upper - cdf_lower, dtype=torch.float32)
+            probs = torch.cat([
+                torch.zeros((len(flat_labels), len(self.special_tokens))), probs], dim=1
+            )
 
         # Use degenerate distribution around pad tokens
         for is_pad, pad_idx in pad_indices:
