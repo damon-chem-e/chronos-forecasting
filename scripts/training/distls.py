@@ -59,7 +59,7 @@ class DistLS(torch.nn.Module):
             probs[is_pad, pad_idx] = 1.0
 
         # Reshape the result to match the expected output shape
-        result_shape = (*labels.shape, len(self.bin_edges))
+        result_shape = (*labels.shape, len(self.bin_edges) + len(self.special_tokens))
         result = probs.view(result_shape)
         result = result.permute(0, -1, *range(1, result.ndim-1))  # Move new dimension C to be the 2nd dimension
 
