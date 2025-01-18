@@ -32,6 +32,7 @@ class DistLS(torch.nn.Module):
             torch.Tensor: Class probabilities including special tokens 
                 in shape [C], [N, C], or [N, C, d_1, d_2, ..., d_K]
         """
+        print("1: ", labels.shape)
         # Flatten labels to handle all cases uniformly
         flat_labels = labels.flatten()
 
@@ -50,13 +51,17 @@ class DistLS(torch.nn.Module):
             cdf_lower = norm.cdf(self.boundaries[:-1], loc=non_pad_labels[:, None], scale=self.variance)
             probs = torch.zeros((len(flat_labels), len(self.bin_edges)))
             probs[~pad_mask] = torch.tensor(cdf_upper - cdf_lower, dtype=torch.float32)
+            print(probs)
             probs = torch.cat([
                 torch.zeros((len(flat_labels), len(self.special_tokens))), probs], dim=1
             )
+            print(probs.shape, probs)
 
         # Use degenerate distribution around pad tokens
         for is_pad, pad_idx in pad_indices:
             probs[is_pad, pad_idx] = 1.0
+
+        print(probs)
 
         # Reshape the result to match the expected output shape
         result_shape = (*labels.shape, len(self.bin_edges) + len(self.special_tokens))
