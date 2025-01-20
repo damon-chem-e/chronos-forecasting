@@ -401,7 +401,8 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         )
         future_target = torch.tensor(entry["future_target"]).unsqueeze(0)
         labels, labels_mask = self.tokenizer.label_input_transform(future_target, scale)
-        labels[labels_mask == 0] = -100
+        # labels[labels_mask == 0] = -100
+        future_target[labels_mask == 0] = -100
         
         # Apply distributional label smoothing
         if self.distls is not None:
@@ -411,9 +412,9 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             # Save every 50th label tensor before precompute_probs
             if self.counter % 50 == 0:
                 with open('labels_before.pkl', 'ab') as f:
-                    pickle.dump(labels.detach().cpu(), f)
+                    pickle.dump(future_target.detach().cpu(), f)
                 
-            labels = self.distls.precompute_probs(labels)
+            labels = self.distls.precompute_probs(future_target)
             
             # Save every 50th label tensor after precompute_probs
             if self.counter % 50 == 0:
