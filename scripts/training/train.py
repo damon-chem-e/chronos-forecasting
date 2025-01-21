@@ -21,6 +21,8 @@ import torch
 import torch.distributed as dist
 from torch.utils.data import IterableDataset, get_worker_info
 import transformers
+import datasets
+
 from transformers import (
     AutoModelForSeq2SeqLM,
     AutoModelForCausalLM,
@@ -600,17 +602,30 @@ def main(
         logger,
     )
 
-    train_datasets = [
-        Filter(
-            partial(
-                has_enough_observations,
-                min_length=min_past + prediction_length,
-                max_missing_prop=max_missing_prop,
-            ),
-            FileDataset(path=Path(data_path), freq="h"),
-        )
-        for data_path in training_data_paths
-    ]
+    try: 
+        train_datasets = [
+            Filter(
+                partial(
+                    has_enough_observations,
+                    min_length=min_past + prediction_length,
+                    max_missing_prop=max_missing_prop,
+                ),
+                FileDataset(path=Path(data_path), freq="h"),
+            )
+            for data_path in training_data_paths
+        ]
+    except:
+        train_datasets = [
+            Filter(
+                partial(
+                    has_enough_observations,
+                    min_length=min_past + prediction_length,
+                    max_missing_prop=max_missing_prop,
+                ),
+                datasets.load_dataset("autogluon/chronos_datasets", data_path, split="train"),
+            )
+            for data_path in training_data_paths
+        ]
 
     log_on_main("Initializing model", logger)
 
@@ -641,6 +656,7 @@ def main(
         top_p=top_p,
     )
 
+
     # Add extra items to model config so that it's saved in the ckpt
     model.config.chronos_config = chronos_config.__dict__
 
@@ -655,6 +671,7 @@ def main(
         imputation_method=LastValueImputation() if model_type == "causal" else None,
         mode="training",
     ).shuffle(shuffle_buffer_length=shuffle_buffer_length)
+    
 
     # Define training args
     training_args = TrainingArguments(
