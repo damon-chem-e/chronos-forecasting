@@ -622,7 +622,7 @@ def main(
                     min_length=min_past + prediction_length,
                     max_missing_prop=max_missing_prop,
                 ),
-                datasets.load_dataset("autogluon/chronos_datasets", data_path, split="train"),
+                datasets.load_dataset("autogluon/chronos_datasets", data_path, streaming=True, split="train"),
             )
             for data_path in training_data_paths
         ]

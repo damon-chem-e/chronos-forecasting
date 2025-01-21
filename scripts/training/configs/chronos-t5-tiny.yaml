@@ -1,6 +1,6 @@
 training_data_paths:
-- "m4_daily"
-- "m4_daily"
+- "training_corpus_tsmixup_10m"
+- "training_corpus_tsmixup_10m"
 probability:
 - 0.9
 - 0.1
