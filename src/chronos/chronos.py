@@ -163,6 +163,7 @@ class MeanScaleUniformBins(ChronosTokenizer):
     def __init__(
         self, low_limit: float, high_limit: float, config: ChronosConfig
     ) -> None:
+        print("Mean scale uniform bins called")
         self.config = config
         self.centers = torch.linspace(
             low_limit,
