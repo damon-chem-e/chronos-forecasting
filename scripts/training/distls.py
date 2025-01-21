@@ -16,6 +16,7 @@ class DistLS(torch.nn.Module):
         super(DistLS, self).__init__()
         self.variance = variance
         self.boundaries = boundaries
+        print(boundaries) # TODO: Make sure this has infinite bounds
         self.special_tokens = special_tokens
         self.bin_edges = list(zip(self.boundaries[:-1], self.boundaries[1:]))
 
@@ -64,4 +65,3 @@ class DistLS(torch.nn.Module):
         result = result.permute(0, -1, *range(1, result.ndim-1))  # Move new dimension C to be the 2nd dimension
 
         return result
-    

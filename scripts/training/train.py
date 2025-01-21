@@ -400,8 +400,9 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             past_target
         )
         future_target = torch.tensor(entry["future_target"]).unsqueeze(0)
-        labels, labels_mask = self.tokenizer.label_input_transform(future_target, scale)
+        # labels, labels_mask = self.tokenizer.label_input_transform(future_target, scale)
         # labels[labels_mask == 0] = -100
+        labels, labels_mask = self.tokenizer.non_quantized_label_input_transform(future_target, scale)
         future_target[labels_mask == 0] = -100
         
         # Apply distributional label smoothing
