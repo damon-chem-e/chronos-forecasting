@@ -665,12 +665,13 @@ def main(
         top_p=top_p,
     )
 
-    # Add extra items to model config so that it's saved in the ckpt
+    # Add extra items to model config so that it's saved in the checkpoint
     model.config.chronos_config = chronos_config.__dict__
 
     distls = None
     print("before create_tokenizer in main called")
     tokenizer = chronos_config.create_tokenizer()
+    print(type(chronos_config), chronos_config.tokenizer_class)
     print("Tokenizer is not none: ", tokenizer is not None, type(tokenizer))
     if use_distls:
         distls = DistLS(boundaries=tokenizer.boundaries, 
