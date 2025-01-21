@@ -47,6 +47,7 @@ class ChronosConfig:
     top_p: float
 
     def __post_init__(self):
+        print("post initialized chronos config")
         assert (
             self.pad_token_id < self.n_special_tokens
             and self.eos_token_id < self.n_special_tokens

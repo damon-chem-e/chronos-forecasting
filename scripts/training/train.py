@@ -671,6 +671,7 @@ def main(
     distls = None
     print("before create_tokenizer in main called")
     tokenizer = chronos_config.create_tokenizer()
+    print("Tokenizer is not none: ", tokenizer is not None, type(tokenizer))
     if use_distls:
         distls = DistLS(boundaries=tokenizer.boundaries, 
                         variance=distls_variance,
