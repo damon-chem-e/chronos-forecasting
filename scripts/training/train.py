@@ -539,6 +539,7 @@ def main(
     top_p: float = 1.0,
     seed: Optional[int] = None,
 ):
+    print(torch.cuda.is_available())
     if tf32 and not (
         torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8
     ):
@@ -693,7 +694,6 @@ def main(
         save_training_info(
             output_dir / "checkpoint-final", training_config=raw_training_config
         )
-
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
