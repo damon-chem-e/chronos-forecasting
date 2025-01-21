@@ -46,8 +46,7 @@ class DistLS(torch.nn.Module):
 
         # Use normal distribution around non-pad tokens
         non_pad_labels = flat_labels[~pad_mask]
-        probs = torch.zeros((len(flat_labels), len(self.special_tokens)))
-        print(len(non_pad_labels))
+        probs = torch.zeros((len(flat_labels), len(self.special_tokens) + len(self.bin_edges)))
         if len(non_pad_labels) > 0:
             cdf_upper = norm.cdf(self.boundaries[1:], loc=non_pad_labels[:, None], scale=self.variance)
             cdf_lower = norm.cdf(self.boundaries[:-1], loc=non_pad_labels[:, None], scale=self.variance)
