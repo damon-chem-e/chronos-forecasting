@@ -669,6 +669,7 @@ def main(
     model.config.chronos_config = chronos_config.__dict__
 
     distls = None
+    print("before create_tokenizer in main called")
     tokenizer = chronos_config.create_tokenizer()
     if use_distls:
         distls = DistLS(boundaries=tokenizer.boundaries, 
