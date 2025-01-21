@@ -401,9 +401,8 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         )
         future_target = torch.tensor(entry["future_target"]).unsqueeze(0)
         # labels, labels_mask = self.tokenizer.label_input_transform(future_target, scale)
-        # labels[labels_mask == 0] = -100
         labels, labels_mask = self.tokenizer.non_quantized_label_input_transform(future_target, scale)
-        future_target[labels_mask == 0] = -100
+        labels[labels_mask == 0] = -100
         
         # Apply distributional label smoothing
         if self.distls is not None:
@@ -669,11 +668,7 @@ def main(
     model.config.chronos_config = chronos_config.__dict__
 
     distls = None
-    print("before create_tokenizer in main called")
     tokenizer = chronos_config.create_tokenizer()
-    print(type(chronos_config), chronos_config.tokenizer_class)
-    print("has attr: ", hasattr(tokenizer, 'non_quantized_label_input_transform'), hasattr(tokenizer, 'context_input_transform'))
-    print("Tokenizer is not none: ", tokenizer is not None, type(tokenizer))
     if use_distls:
         distls = DistLS(boundaries=tokenizer.boundaries, 
                         variance=distls_variance,
