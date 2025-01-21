@@ -155,7 +155,7 @@ class ChronosTokenizer:
     
     def non_quantized_label_input_transform(
         self, label: torch.Tensor, scale: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> Tuple:
         raise NotImplementedError()
 
 
