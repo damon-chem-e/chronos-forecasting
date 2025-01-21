@@ -53,6 +53,7 @@ class ChronosConfig:
         ), f"Special token id's must be smaller than {self.n_special_tokens=}"
 
     def create_tokenizer(self) -> "ChronosTokenizer":
+        print("create tokenizer called")
         class_ = getattr(chronos, self.tokenizer_class)
         return class_(**self.tokenizer_kwargs, config=self)
 
@@ -163,7 +164,7 @@ class MeanScaleUniformBins(ChronosTokenizer):
     def __init__(
         self, low_limit: float, high_limit: float, config: ChronosConfig
     ) -> None:
-        print("Mean scale uniform bins called")
+        print("Mean scale uniform bins constructor called")
         self.config = config
         self.centers = torch.linspace(
             low_limit,
