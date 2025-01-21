@@ -603,6 +603,7 @@ def main(
     )
 
     try: 
+        print("found path")
         train_datasets = [
             Filter(
                 partial(
@@ -615,6 +616,14 @@ def main(
             for data_path in training_data_paths
         ]
     except:
+        print("no path found")
+
+        for data_path in training_data_paths:
+            ds = datasets.load_dataset("autogluon/chronos_datasets", data_path, split="train")
+            ds.save_to_disk(f"./{data_path}.arrow")  
+
+        print("found path")
+
         train_datasets = [
             Filter(
                 partial(
@@ -622,7 +631,7 @@ def main(
                     min_length=min_past + prediction_length,
                     max_missing_prop=max_missing_prop,
                 ),
-                datasets.load_dataset("autogluon/chronos_datasets", data_path, streaming=True, split="train"),
+                FileDataset(path=Path(data_path + ".arrow"), freq="h"),
             )
             for data_path in training_data_paths
         ]

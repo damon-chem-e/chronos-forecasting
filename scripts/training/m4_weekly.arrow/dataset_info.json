@@ -1,0 +1,56 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "m4_weekly",
+  "dataset_name": "chronos_datasets",
+  "dataset_size": 6048702,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/autogluon/chronos_datasets@963bbdee60d03b02547f453120f4ade7675e8b1f/m4_weekly/train-00000-of-00001.parquet": {
+      "num_bytes": 2556691,
+      "checksum": null
+    }
+  },
+  "download_size": 2556691,
+  "features": {
+    "id": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "timestamp": {
+      "feature": {
+        "dtype": "timestamp[ms]",
+        "_type": "Value"
+      },
+      "_type": "Sequence"
+    },
+    "target": {
+      "feature": {
+        "dtype": "float64",
+        "_type": "Value"
+      },
+      "_type": "Sequence"
+    },
+    "category": {
+      "dtype": "string",
+      "_type": "Value"
+    }
+  },
+  "homepage": "https://github.com/Mcompetitions/M4-methods",
+  "license": "",
+  "size_in_bytes": 8605393,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 6048702,
+      "num_examples": 359,
+      "dataset_name": "chronos_datasets"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}
