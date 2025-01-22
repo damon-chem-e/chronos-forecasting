@@ -400,30 +400,12 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             past_target
         )
         future_target = torch.tensor(entry["future_target"]).unsqueeze(0)
-        print("1: ", future_target)
-        # labels, labels_mask = self.tokenizer.label_input_transform(future_target, scale)
         labels, labels_mask = self.tokenizer.non_quantized_label_input_transform(future_target, scale)
-        print("2: ", labels)
         labels[labels_mask == 0] = -100
-        print("3: ", labels)
         
         # Apply distributional label smoothing
         if self.distls is not None:
-            if not hasattr(self, 'counter'):
-                self.counter = 0
-                
-            # Save every 50th label tensor before precompute_probs
-            if self.counter % 50 == 0:
-                with open('labels_before.pkl', 'ab') as f:
-                    pickle.dump(labels.detach().cpu(), f)
-                
             labels = self.distls.precompute_probs(labels)
-            
-            # Save every 50th label tensor after precompute_probs
-            if self.counter % 50 == 0:
-                with open('labels_after.pkl', 'ab') as f:
-                    pickle.dump(labels.detach().cpu(), f)
-            self.counter += 1
 
         if self.model_type == "causal":
             # The InstanceSplitter pads time series on the left to be equal to the
