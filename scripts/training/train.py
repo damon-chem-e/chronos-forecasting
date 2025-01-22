@@ -613,10 +613,9 @@ def main(
         
         ds = datasets.load_dataset("autogluon/chronos_datasets", "m4_daily", split="train")
         ds.set_format("numpy")
-        new_col = [np.datetime64("2000-01-01 00:00", "s")] * len(ds)
+        new_col = [dataset["timestamp"] for dataset in ds]
         ds = ds.add_column("start", new_col)
 
-        print("HELLO", ds[0]["timestamp"])
         train_datasets = [
             Filter(
                 partial(
