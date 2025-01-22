@@ -616,6 +616,7 @@ def main(
         new_col = [np.datetime64("2000-01-01 00:00", "s")] * len(ds)
         ds = ds.add_column("start", new_col)
 
+        print(data["timestamp"] for data in ds)
         train_datasets = [
             Filter(
                 partial(
