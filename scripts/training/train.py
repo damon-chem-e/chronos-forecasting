@@ -622,7 +622,7 @@ def main(
 
         for data_path in training_data_paths:
             ds = datasets.load_dataset("autogluon/chronos_datasets", data_path, split="train")
-            ds.save_to_disk(f"./{data_path}.arrow")  
+            ds.save_to_disk(f"./{data_path}.hf")  
 
         print("found path")
 
@@ -633,7 +633,7 @@ def main(
                     min_length=min_past + prediction_length,
                     max_missing_prop=max_missing_prop,
                 ), 
-                FileDataset(path=Path(data_path + ".arrow"), freq="h"),
+                FileDataset(path=Path(data_path + ".hf"), freq="h"),
             )
             for data_path in training_data_paths
         ]
