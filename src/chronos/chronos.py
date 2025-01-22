@@ -206,6 +206,21 @@ class MeanScaleUniformBins(ChronosTokenizer):
         token_ids[~attention_mask] = self.config.pad_token_id
 
         return token_ids, attention_mask, scale
+    
+    def _input_scale(
+        self, context: torch.Tensor, scale: Optional[torch.Tensor] = None
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        context = context.to(dtype=torch.float32)
+        attention_mask = ~torch.isnan(context)
+
+        if scale is None:
+            scale = torch.nansum(
+                torch.abs(context) * attention_mask, dim=-1
+            ) / torch.nansum(attention_mask, dim=-1)
+            scale[~(scale > 0)] = 1.0
+
+        scaled_context = context / scale.unsqueeze(dim=-1)
+        return scaled_context, attention_mask
 
     def _append_eos_token(
         self, token_ids: torch.Tensor, attention_mask: torch.Tensor
@@ -241,12 +256,11 @@ class MeanScaleUniformBins(ChronosTokenizer):
         length = label.shape[-1]
 
         assert length == self.config.prediction_length
-        token_ids, attention_mask, _ = self._input_transform(context=label, scale=scale)
-        print("4: ", token_ids)
+        scaled_label, attention_mask = self._input_scale(context=label, scale=scale)
 
         if self.config.use_eos_token:
             label, attention_mask = self._append_eos_token(
-                token_ids=label, attention_mask=attention_mask
+                token_ids=scaled_label, attention_mask=attention_mask
             )
             
         return label, attention_mask
