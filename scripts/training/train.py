@@ -606,6 +606,10 @@ def main(
 
     try: 
         print("found path")
+        
+        ds = datasets.load_dataset("autogluon/chronos_datasets", "m4_daily", split="train")
+        ds.set_format("numpy")
+
         train_datasets = [
             Filter(
                 partial(
@@ -613,10 +617,22 @@ def main(
                     min_length=min_past + prediction_length,
                     max_missing_prop=max_missing_prop,
                 ),
-                FileDataset(path=Path(data_path), freq="h"),
+                ds,
             )
             for data_path in training_data_paths
         ]
+        # print("found path")
+        # train_datasets = [
+        #     Filter(
+        #         partial(
+        #             has_enough_observations,
+        #             min_length=min_past + prediction_length,
+        #             max_missing_prop=max_missing_prop,
+        #         ),
+        #         FileDataset(path=Path(data_path), freq="h"),
+        #     )
+        #     for data_path in training_data_paths
+        # ]
     except:
         print("no path found")
 
