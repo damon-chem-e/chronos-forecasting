@@ -331,7 +331,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
 
     def preprocess_entry(self, entry: dict, mode: str) -> dict:
         print("Entering preprocess_entry")
-        print(f"{entry=}")
+        print(f"{entry=}, {entry.keys()=}")
         entry = {f: entry[f] for f in ["start", "target"]}
         entry["target"] = np.asarray(entry["target"], dtype=self.np_dtype)
         assert entry["target"].ndim == 1, f"got {entry['target'].ndim=}, expected 1"
