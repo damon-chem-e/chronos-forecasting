@@ -1,5 +1,5 @@
 training_data_paths:
-- "m4_weekly"
+- "wind_farms_daily"
 - "m4_weekly"
 probability:
 - 0.9

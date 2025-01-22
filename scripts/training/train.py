@@ -332,8 +332,8 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
     def preprocess_entry(self, entry: dict, mode: str) -> dict:
         print("Entering preprocess_entry")
         print(f"{entry=}, {entry.keys()=}")
-        # entry = {f: entry[f] for f in ["start", "target"]}
-        entry = {f: entry[f] for f in ["target"]}
+        entry = {f: entry[f] for f in ["start", "target"]}
+        # entry = {f: entry[f] for f in ["target"]}
         entry["target"] = np.asarray(entry["target"], dtype=self.np_dtype)
         assert entry["target"].ndim == 1, f"got {entry['target'].ndim=}, expected 1"
 
@@ -612,6 +612,8 @@ def main(
         
         ds = datasets.load_dataset("autogluon/chronos_datasets", "m4_daily", split="train")
         ds.set_format("numpy")
+        new_col = [np.datetime64("2000-01-01 00:00", "s")] * len(ds)
+        ds = ds.add_column("start", new_col)
 
         train_datasets = [
             Filter(
