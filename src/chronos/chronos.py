@@ -242,6 +242,7 @@ class MeanScaleUniformBins(ChronosTokenizer):
 
         assert length == self.config.prediction_length
         token_ids, attention_mask, _ = self._input_transform(context=label, scale=scale)
+        print("4: ", token_ids)
 
         if self.config.use_eos_token:
             label, attention_mask = self._append_eos_token(
