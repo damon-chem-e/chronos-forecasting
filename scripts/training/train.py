@@ -695,11 +695,20 @@ def main(
         remove_unused_columns=False,
     )
 
+    cross_entropy_loss = torch.nn.CrossEntropyLoss()
+    
     # Create Trainer instance
+    def compute_loss(model, inputs):
+        outputs = model(**inputs)
+        logits = outputs.logits
+        labels = inputs.get("labels")
+        return cross_entropy_loss(logits, labels)
+
     trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=shuffled_train_dataset,
+        compute_loss_func=compute_loss
     )
     log_on_main("Training", logger)
 
