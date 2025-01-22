@@ -1,6 +1,6 @@
 import datasets
 
-path = "m4_daily"
+path = "weekly"
 ds = datasets.load_dataset("autogluon/chronos_datasets", path, split="train")
 
-print(ds.features)
+print(ds)

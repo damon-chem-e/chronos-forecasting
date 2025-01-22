@@ -490,7 +490,9 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             while True:
                 idx = np.random.choice(range(len(iterators)), p=probs)
                 try:
-                    yield self.to_hf_format(next(iterators[idx]))
+                    test = self.to_hf_format(next(iterators[idx])) # TODO
+                    print(test)
+                    yield test
                 except StopIteration:
                     probs[idx] = 0
                     if sum(probs) == 0:
@@ -630,7 +632,7 @@ def main(
                     has_enough_observations,
                     min_length=min_past + prediction_length,
                     max_missing_prop=max_missing_prop,
-                ),
+                ), 
                 FileDataset(path=Path(data_path + ".arrow"), freq="h"),
             )
             for data_path in training_data_paths
