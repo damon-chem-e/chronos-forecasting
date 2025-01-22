@@ -47,8 +47,7 @@ from gluonts.transform import (
 )
 
 from chronos import ChronosConfig, ChronosTokenizer
-
-
+import torch._dynamo
 app = typer.Typer(pretty_exceptions_enable=False)
 
 
@@ -547,6 +546,8 @@ def main(
     seed: Optional[int] = None,
 ):
     print(torch.cuda.is_available())
+    torch._dynamo.config.suppress_errors = True
+
     if tf32 and not (
         torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8
     ):
