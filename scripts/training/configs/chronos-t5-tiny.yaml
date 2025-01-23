@@ -13,7 +13,7 @@ prediction_length: 64
 min_past: 60
 max_steps: 10_000 #200_000
 save_steps: 1000 #100_000
-log_steps: 500
+log_steps: 50
 per_device_train_batch_size: 32
 learning_rate: 0.001
 optim: adamw_torch_fused
