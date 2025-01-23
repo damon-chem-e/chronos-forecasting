@@ -632,6 +632,7 @@ def main(
         for data_path in training_data_paths:
             ds = datasets.load_dataset("autogluon/chronos_datasets", data_path, split="train")
             ds.set_format("numpy")
+            new_col = [dataset["timestamp"] for dataset in ds]
             ds = ds.add_column("start", new_col)
             train_datasets.append(
                 Filter(
