@@ -1,5 +1,7 @@
-#!/bin/bash 
-#SBATCH -n 1 #Request 1 task (cores)
+#!/bin/bash
+#SBATCH --job-name=chronos-t5-tiny
+#SBATCH -n 4 #Request 4 cores
+#SBATCH --gres=gpu:1
 #SBATCH -N 1 #Request 1 node
 #SBATCH -t 0-5:00 #Request runtime of 5 hours
 #SBATCH -p sched_mit_sloan_gpu #Run on sched_mit_sloan_gpu partition
@@ -7,6 +9,7 @@
 
 #SBATCH -o output_%j.txt #redirect output to output_JOBID.txt
 #SBATCH -e error_%j.txt #redirect errors to error_JOBID.txt
-#SBATCH --mail-type=BEGIN,END #Mail when job starts and ends
-#SBATCH --mail-user=test@test.com #email recipient
-echo "Hello World"
+
+source /home/hanngao/.bashrc
+source activate nlp2
+python CUDA_VISIBLE_DEVICES=0 train.py --config ./configs/chronos-t5-tiny.yaml

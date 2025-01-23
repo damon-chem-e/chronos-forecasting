@@ -2,10 +2,12 @@ training_data_paths:
 - "wind_farms_daily"
 - "wind_farms_hourly"
 - "mexico_city_bikes"
+- "m5"
 probability:
+- 0.2
+- 0.2
+- 0.2
 - 0.4
-- 0.3
-- 0.3
 context_length: 512
 prediction_length: 64
 min_past: 60
