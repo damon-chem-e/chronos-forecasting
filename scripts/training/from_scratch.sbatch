@@ -8,6 +8,7 @@
 #SBATCH -o output_%j.txt #redirect output to output_JOBID.txt
 #SBATCH -e error_%j.txt #redirect errors to error_JOBID.txt
 
+module load anaconda3/2023.07
 source /home/hanngao/.bashrc
 source activate nlp2
 CUDA_VISIBLE_DEVICES=0 python train.py --config ./configs/chronos-t5-tiny.yaml
