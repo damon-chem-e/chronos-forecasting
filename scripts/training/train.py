@@ -578,6 +578,8 @@ def main(
         probability = [1.0 / len(training_data_paths)] * len(training_data_paths)
     assert isinstance(probability, list)
 
+    print(len(training_data_paths), len(probability), probability)
+
     assert len(training_data_paths) == len(probability)
 
     if dataloader_num_workers > len(training_data_paths):
