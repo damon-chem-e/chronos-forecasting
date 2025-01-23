@@ -611,13 +611,30 @@ def main(
     try: 
         print("found path")
         
-        ds = datasets.load_dataset("autogluon/chronos_datasets", "m4_daily", split="train")
-        ds.set_format("numpy")
-        new_col = [dataset["timestamp"] for dataset in ds]
-        ds = ds.add_column("start", new_col)
+        # ds = datasets.load_dataset("autogluon/chronos_datasets", data_path, split="train")
+        # ds.set_format("numpy")
+        # new_col = [dataset["timestamp"] for dataset in ds]
+        # ds = ds.add_column("start", new_col)
 
-        train_datasets = [
-            Filter(
+        # train_datasets = [
+        #     Filter(
+        #         partial(
+        #             has_enough_observations,
+        #             min_length=min_past + prediction_length,
+        #             max_missing_prop=max_missing_prop,
+        #         ),
+        #         ds,
+        #     )
+        #     for data_path in training_data_paths
+        # ]
+
+        train_datasets = []
+        for data_path in training_data_paths:
+            ds = datasets.load_dataset("autogluon/chronos_datasets", data_path, split="train")
+            ds.set_format("numpy")
+            ds = ds.add_column("start", new_col)
+            train_datasets.append(
+                Filter(
                 partial(
                     has_enough_observations,
                     min_length=min_past + prediction_length,
@@ -625,8 +642,8 @@ def main(
                 ),
                 ds,
             )
-            for data_path in training_data_paths
-        ]
+            )
+
         # print("found path")
         # train_datasets = [
         #     Filter(
