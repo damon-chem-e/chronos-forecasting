@@ -10,4 +10,4 @@
 
 source /home/hanngao/.bashrc
 source activate nlp2
-python CUDA_VISIBLE_DEVICES=0 train.py --config ./configs/chronos-t5-tiny.yaml
+CUDA_VISIBLE_DEVICES=0 python train.py --config ./configs/chronos-t5-tiny.yaml
