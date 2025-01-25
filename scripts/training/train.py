@@ -707,8 +707,8 @@ def main(
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=shuffled_train_dataset,
-        compute_loss_func=compute_loss
+        train_dataset=shuffled_train_dataset
+        # compute_loss_func=compute_loss
     )
     log_on_main("Training", logger)
 
