@@ -510,7 +510,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
 class DistLSTrainer(Trainer):
     def __init__(self, *args, **kwargs):
         self.cross_entropy_loss = torch.nn.CrossEntropyLoss()
-        super.__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
     
     def compute_loss(self, model, inputs, return_outputs=False):
         outputs = model(input_ids=inputs.get('input_ids'), 
