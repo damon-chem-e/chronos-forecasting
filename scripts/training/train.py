@@ -400,12 +400,13 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             past_target
         )
         future_target = torch.tensor(entry["future_target"]).unsqueeze(0)
-        labels, labels_mask = self.tokenizer.non_quantized_label_input_transform(future_target, scale)
-        labels[labels_mask == 0] = -100
+        token_ids, non_q_labels, labels_mask = self.tokenizer.non_quantized_label_input_transform(future_target, scale)
+        token_ids[labels_mask == 0] = -100
+        non_q_labels[labels_mask == 0] = -100
         
         # Apply distributional label smoothing
         if self.distls is not None:
-            labels = self.distls.precompute_probs(labels)
+            probs = self.distls.precompute_probs(non_q_labels)
 
         if self.model_type == "causal":
             # The InstanceSplitter pads time series on the left to be equal to the
@@ -451,7 +452,8 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         return {
             "input_ids": input_ids.squeeze(0),
             "attention_mask": attention_mask.squeeze(0),
-            "labels": labels.squeeze(0),
+            "labels": token_ids.squeeze(0),
+            "probs": probs.squeeze(0)
         }
 
     def __iter__(self) -> Iterator:
@@ -699,16 +701,16 @@ def main(
     
     # Create Trainer instance
     def compute_loss(model, inputs):
-        outputs = model(**inputs)
+        outputs = model(input_ids=inputs.get("input_ids"), labels=inputs.get("labels")) # T5
         logits = outputs.logits
-        labels = inputs.get("labels")
-        return cross_entropy_loss(logits, labels)
+        probs = inputs.get("probs")
+        return cross_entropy_loss(logits, probs)
 
     trainer = Trainer(
         model=model,
         args=training_args,
-        train_dataset=shuffled_train_dataset
-        # compute_loss_func=compute_loss
+        train_dataset=shuffled_train_dataset,
+        compute_loss_func=compute_loss
     )
     log_on_main("Training", logger)
 
