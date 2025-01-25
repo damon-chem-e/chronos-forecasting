@@ -512,7 +512,7 @@ class DistLSTrainer(Trainer):
         self.cross_entropy_loss = torch.nn.CrossEntropyLoss()
         super().__init__(*args, **kwargs)
     
-    def compute_loss(self, model, inputs, return_outputs=False):
+    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
         outputs = model(input_ids=inputs.get('input_ids'), 
                         attention_mask=inputs.get('attention_mask'), 
                         labels=inputs.get('labels'))
