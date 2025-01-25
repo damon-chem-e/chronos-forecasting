@@ -254,7 +254,7 @@ class MeanScaleUniformBins(ChronosTokenizer):
         length = label.shape[-1]
 
         assert length == self.config.prediction_length
-        context = context.to(dtype=torch.float32)
+        context = label.to(dtype=torch.float32)
         raw_attention_mask = ~torch.isnan(context)
 
         if scale is None:
