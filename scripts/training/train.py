@@ -507,6 +507,18 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             for entry in itertools.chain(*iterators):
                 yield self.to_hf_format(entry)
 
+class DistLSTrainer(Trainer):
+    def __init__(self, *args, **kwargs):
+        self.cross_entropy_loss = torch.nn.CrossEntropyLoss()
+        super.__init__(*args, **kwargs)
+    
+    def compute_loss(self, model, inputs, return_outputs=False):
+        outputs = model(input_ids=inputs.get('input_ids'), 
+                        attention_mask=inputs.get('attention_mask'), 
+                        labels=inputs.get('labels'))
+        logits = outputs.logits
+        probs = inputs.get('probs')
+        return self.cross_entropy_loss(logits, probs)    
 
 @app.command()
 @use_yaml_config(param_name="config")
@@ -697,20 +709,10 @@ def main(
         remove_unused_columns=False,
     )
 
-    cross_entropy_loss = torch.nn.CrossEntropyLoss()
-    
-    # Create Trainer instance
-    def compute_loss(model, inputs):
-        outputs = model(input_ids=inputs.get("input_ids"), labels=inputs.get("labels")) # T5
-        logits = outputs.logits
-        probs = inputs.get("probs")
-        return cross_entropy_loss(logits, probs)
-
-    trainer = Trainer(
+    trainer = DistLSTrainer(
         model=model,
         args=training_args,
-        train_dataset=shuffled_train_dataset,
-        compute_loss_func=compute_loss
+        train_dataset=shuffled_train_dataset
     )
     log_on_main("Training", logger)
 
