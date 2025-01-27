@@ -499,8 +499,10 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
                 print(len(iterators), probs)
                 idx = np.random.choice(range(len(iterators)), p=probs)
                 try:
+                    print("yield")
                     yield self.to_hf_format(next(iterators[idx]))
                 except StopIteration:
+                    print("except")
                     probs[idx] = 0
                     if sum(probs) == 0:
                         return
@@ -718,19 +720,8 @@ def main(
         train_dataset=shuffled_train_dataset
     )
     log_on_main("Training", logger)
-
-    with torch.profiler.profile(
-        activities=[
-            torch.profiler.ProfilerActivity.CPU,
-            torch.profiler.ProfilerActivity.CUDA
-        ],
-        record_shapes=True,
-        profile_memory=True,
-        with_stack=True
-    ) as prof:
-        trainer.train()
-
-    print(prof.key_averages().table(sort_by="self_cpu_time_total"))
+        
+    trainer.train()
 
     if is_main_process():
         model.save_pretrained(output_dir / "checkpoint-final")
