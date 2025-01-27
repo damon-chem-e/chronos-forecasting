@@ -495,6 +495,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
 
         iterators = list(map(iter, iterables))
         print(f"{iterators=}")
+        raise Exception
         if self.mode == "training":
             while True:
                 # print(len(iterators), probs)
