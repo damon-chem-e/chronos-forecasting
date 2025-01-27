@@ -507,6 +507,8 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
                     if sum(probs) == 0:
                         return
                     probs = [prob / sum(probs) for prob in probs]
+            print("finished!!")
+            raise Exception
         else:
             for entry in itertools.chain(*iterators):
                 yield self.to_hf_format(entry)
@@ -523,6 +525,7 @@ class DistLSTrainer(Trainer):
         logits = outputs.logits
         probs = inputs.get('probs')
         loss = self.cross_entropy_loss(logits, probs)
+        print(f"{loss=}")
         return (loss, outputs) if return_outputs else loss
 
 @app.command()
