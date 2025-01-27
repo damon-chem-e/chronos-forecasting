@@ -501,6 +501,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
                     yield self.to_hf_format(next(iterators[idx]))
                 except StopIteration:
                     probs[idx] = 0
+                    print(sum(probs))
                     if sum(probs) == 0:
                         return
                     probs = [prob / sum(probs) for prob in probs]

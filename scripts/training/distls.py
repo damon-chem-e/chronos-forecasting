@@ -16,7 +16,7 @@ class DistLS(torch.nn.Module):
         super(DistLS, self).__init__()
         self.variance = variance
         self.boundaries = boundaries
-        print(boundaries) # TODO: Make sure this has infinite bounds
+        print(boundaries)
         self.special_tokens = special_tokens
         self.bin_edges = list(zip(self.boundaries[:-1], self.boundaries[1:]))
 
@@ -33,7 +33,6 @@ class DistLS(torch.nn.Module):
             torch.Tensor: Class probabilities including special tokens 
                 in shape [C], [N, C], or [N, C, d_1, d_2, ..., d_K]
         """
-        print("Starting precompute probs...")
         # Flatten labels to handle all cases uniformly
         flat_labels = labels.flatten()
 
@@ -66,5 +65,4 @@ class DistLS(torch.nn.Module):
         result = probs.view(result_shape)
         result = result.permute(0, -1, *range(1, result.ndim-1))  # Move new dimension C to be the 2nd dimension
 
-        print("Precompute probs done...")
         return result
