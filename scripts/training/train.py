@@ -449,7 +449,8 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             labels = input_ids.clone()
             input_ids[~attention_mask] = self.tokenizer.config.pad_token_id
             labels[~attention_mask] = -100
-
+        
+        print(probabilities.squeeze(0))
         return {
             "input_ids": input_ids.squeeze(0),
             "attention_mask": attention_mask.squeeze(0),
@@ -496,13 +497,13 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         iterators = list(map(iter, iterables))
         if self.mode == "training":
             while True:
-                print(len(iterators), probs)
+                # print(len(iterators), probs)
                 idx = np.random.choice(range(len(iterators)), p=probs)
                 try:
-                    print("yield")
+                    # print("yield")
                     yield self.to_hf_format(next(iterators[idx]))
                 except StopIteration:
-                    print("except")
+                    # print("except")
                     probs[idx] = 0
                     if sum(probs) == 0:
                         return
