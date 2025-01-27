@@ -507,6 +507,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
                     print("started iterating")
 
                     i = 0
+                    print(f"{iterators=}")
                     for x in iterators[idx]:
                         print(f"this is the {i}th entry")
                         i += 1
