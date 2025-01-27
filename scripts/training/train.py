@@ -331,6 +331,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         self.mode = mode
         self.np_dtype = np_dtype
         self.distls = distls
+        self.count = count
 
     def preprocess_entry(self, entry: dict, mode: str) -> dict:
         entry = {f: entry[f] for f in ["start", "target"]}
@@ -498,7 +499,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         # print(f"{iterators=}")
         # raise Exception
         if self.mode == "training":
-            while True and count < 5:
+            while True and self.count < 5:
                 # print(len(iterators), probs)
                 idx = np.random.choice(range(len(iterators)), p=probs)
                 try:
