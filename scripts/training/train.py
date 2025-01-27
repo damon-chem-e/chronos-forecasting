@@ -513,11 +513,15 @@ class DistLSTrainer(Trainer):
         super().__init__(*args, **kwargs)
     
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        print("trainer 1")
         outputs = model(input_ids=inputs.get('input_ids'), 
                         attention_mask=inputs.get('attention_mask'), 
                         labels=inputs.get('labels'))
+        print("trainer 2")
         logits = outputs.logits
+        print("trainer 3")
         probs = inputs.get('probs')
+        print("trainer 4")
         return self.cross_entropy_loss(logits, probs)    
 
 @app.command()
