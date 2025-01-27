@@ -717,17 +717,17 @@ def main(
         remove_unused_columns=False,
     )
 
-    # trainer = DistLSTrainer(
-    #     model=model,
-    #     args=training_args,
-    #     train_dataset=shuffled_train_dataset
-    # )
-
-    trainer = Trainer(
+    trainer = DistLSTrainer(
         model=model,
         args=training_args,
-        train_dataset=shuffled_train_dataset,
+        train_dataset=shuffled_train_dataset
     )
+
+    # trainer = Trainer(
+    #     model=model,
+    #     args=training_args,
+    #     train_dataset=shuffled_train_dataset,
+    # )
 
     log_on_main("Training", logger)
         
