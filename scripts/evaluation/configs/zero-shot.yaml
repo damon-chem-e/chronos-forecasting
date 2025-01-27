@@ -40,11 +40,11 @@
   offset: -8
   prediction_length: 8
   num_rolls: 1
-- name: monash_weather
-  hf_repo: autogluon/chronos_datasets
-  offset: -30
-  prediction_length: 30
-  num_rolls: 1
+# - name: monash_weather
+#   hf_repo: autogluon/chronos_datasets
+#   offset: -30
+#   prediction_length: 30
+#   num_rolls: 1
 # - name: monash_covid_deaths
 #   hf_repo: autogluon/chronos_datasets
 #   offset: -30
