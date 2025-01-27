@@ -500,7 +500,9 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
                 idx = np.random.choice(range(len(iterators)), p=probs)
                 try:
                     print("yield")
-                    yield self.to_hf_format(next(iterators[idx]))
+                    result = self.to_hf_format(next(iterators[idx]))
+                    print("yield result: ", result)
+                    yield result
                     print("yield 2")
                 except StopIteration:
                     print("except")
