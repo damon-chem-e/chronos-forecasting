@@ -19,6 +19,7 @@ import typer
 from typer_config import use_yaml_config
 import numpy as np
 import torch
+import torch.profiler
 import torch.distributed as dist
 from torch.utils.data import IterableDataset, get_worker_info
 import transformers
@@ -513,15 +514,11 @@ class DistLSTrainer(Trainer):
         super().__init__(*args, **kwargs)
     
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
-        print("trainer 1")
         outputs = model(input_ids=inputs.get('input_ids'), 
                         attention_mask=inputs.get('attention_mask'), 
                         labels=inputs.get('labels'))
-        print("trainer 2")
         logits = outputs.logits
-        print("trainer 3")
         probs = inputs.get('probs')
-        print("trainer 4")
         return self.cross_entropy_loss(logits, probs)    
 
 @app.command()
@@ -720,7 +717,18 @@ def main(
     )
     log_on_main("Training", logger)
 
-    trainer.train()
+    with torch.profiler.profile(
+        activities=[
+            torch.profiler.ProfilerActivity.CPU,
+            torch.profiler.ProfilerActivity.CUDA
+        ],
+        record_shapes=True,
+        profile_memory=True,
+        with_stack=True
+    ) as prof:
+        trainer.train()
+
+    print(prof.key_averages().table(sort_by="self_cpu_time_total"))
 
     if is_main_process():
         model.save_pretrained(output_dir / "checkpoint-final")
