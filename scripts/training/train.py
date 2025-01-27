@@ -511,7 +511,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
                     with open("/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/out_{count}.pkl", "wb") as f:
                         pickle.dump(out_item, f)
                     count += 1
-                    print(f"{out_item=}")d
+                    print(f"{out_item=}")
                     yield out_item
                     
                 except StopIteration:
