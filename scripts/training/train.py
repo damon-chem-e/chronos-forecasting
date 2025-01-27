@@ -502,26 +502,25 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             while True and self.count < 5:
                 # print(len(iterators), probs)
                 idx = np.random.choice(range(len(iterators)), p=probs)
-                try:
-                    # print("yield")
-                    print(f"{len(list(iterators[idx]))=}")
-                    next_item = next(iterators[idx])
-                    with open("/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/in_{count}.pkl", "wb") as f:
-                        pickle.dump(next_item, f)
-                    print(f"{next_item=}")
-                    out_item = self.to_hf_format(next_item)
-                    with open("/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/out_{count}.pkl", "wb") as f:
-                        pickle.dump(out_item, f)
-                    count += 1
-                    print(f"{out_item=}")
-                    yield out_item
+                # print("yield")
+                print(f"{len(list(iterators[idx]))=}")
+                next_item = next(iterators[idx])
+                with open("/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/in_{count}.pkl", "wb") as f:
+                    pickle.dump(next_item, f)
+                print(f"{next_item=}")
+                out_item = self.to_hf_format(next_item)
+                with open("/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/out_{count}.pkl", "wb") as f:
+                    pickle.dump(out_item, f)
+                count += 1
+                print(f"{out_item=}")
+                yield out_item
                     
-                except StopIteration:
-                    print("except")
-                    probs[idx] = 0
-                    if sum(probs) == 0:
-                        return
-                    probs = [prob / sum(probs) for prob in probs]
+                # except StopIteration:
+                #     print("except")
+                #     probs[idx] = 0
+                #     if sum(probs) == 0:
+                #         return
+                #     probs = [prob / sum(probs) for prob in probs]
             print("finished!!")
             raise Exception
         else:
