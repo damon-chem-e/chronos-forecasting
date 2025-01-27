@@ -1,5 +1,5 @@
 training_data_paths:
-- "training/zero_shot_datasets_train_val/monash_cif_2016.arrow"
+- "training/zero_shot_datasets_train_val/monash_australian_electricity.arrow"
 
 probability:
 - 1.0
