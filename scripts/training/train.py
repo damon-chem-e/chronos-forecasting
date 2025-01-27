@@ -501,6 +501,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
                 try:
                     print("yield")
                     yield self.to_hf_format(next(iterators[idx]))
+                    print("yield 2")
                 except StopIteration:
                     print("except")
                     probs[idx] = 0
