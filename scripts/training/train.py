@@ -311,6 +311,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         mode: str = "training",
         np_dtype=np.float32,
         distls: DistLS = None
+        count: int=0
     ) -> None:
         super().__init__()
 
@@ -494,17 +495,25 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         probs = [prob / sum(probs) for prob in probs]
 
         iterators = list(map(iter, iterables))
-        print(f"{iterators=}")
-        raise Exception
+        # print(f"{iterators=}")
+        # raise Exception
         if self.mode == "training":
-            while True:
+            while True and count < 5:
                 # print(len(iterators), probs)
                 idx = np.random.choice(range(len(iterators)), p=probs)
                 try:
                     # print("yield")
                     next_item = next(iterators[idx])
+                    with open("/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/in_{count}.pkl", "wb") as f:
+                        pickle.dump(next_item, f)
                     print(f"{next_item=}")
-                    yield self.to_hf_format(next_item)
+                    out_item = self.to_hf_format(next_item)
+                    with open("/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/out_{count}.pkl", "wb") as f:
+                        pickle.dump(out_item, f)
+                    count += 1
+                    print(f"{out_item=}")
+                    yield out_item
+                    
                 except StopIteration:
                     print("except")
                     probs[idx] = 0
