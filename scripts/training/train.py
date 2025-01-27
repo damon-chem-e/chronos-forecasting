@@ -46,8 +46,17 @@ from gluonts.transform import (
     LastValueImputation,
 )
 
-from distls import DistLS
-from chronos import ChronosConfig, ChronosTokenizer
+try: 
+    from distls import DistLS
+except ImportError:
+    from training.distls import DistLS  
+try:
+    from chronos.chronos import ChronosConfig, ChronosTokenizer
+except ImportError:
+    import sys
+    sys.path.append("src")
+    sys.path.append("../src")
+    from chronos.chronos import ChronosConfig, ChronosTokenizer
 
 
 app = typer.Typer(pretty_exceptions_enable=False)
@@ -430,7 +439,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             input_ids = torch.cat(
                 [
                     obs_input_ids,
-                    labels,
+                    token_ids,
                     padded_input_ids,
                 ],
                 axis=-1,
