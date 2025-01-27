@@ -450,7 +450,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             input_ids[~attention_mask] = self.tokenizer.config.pad_token_id
             labels[~attention_mask] = -100
         
-        np.save('/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/tensor.npy', numpy_array)
+        np.save('/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/tensor.npy', probabilities.squeeze(0))
         raise Exception
 
         return {
