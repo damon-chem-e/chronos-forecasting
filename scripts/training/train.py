@@ -503,7 +503,12 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
                 # print(len(iterators), probs)
                 idx = np.random.choice(range(len(iterators)), p=probs)
                 # print("yield")
-                print(f"{len(list(iterators[idx]))=}")
+                print("started iterating")
+
+                i = 0
+                for x in iterators[idx]:
+                    print(f"this is the {i}th entry")
+                    i += 1
                 next_item = next(iterators[idx])
                 with open("/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/in_{count}.pkl", "wb") as f:
                     pickle.dump(next_item, f)
