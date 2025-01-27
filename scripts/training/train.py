@@ -520,7 +520,7 @@ class DistLSTrainer(Trainer):
         logits = outputs.logits
         probs = inputs.get('probs')
         loss = self.cross_entropy_loss(logits, probs)
-        return (loss, logits) if return_outputs else loss
+        return (loss, outputs) if return_outputs else loss
 
 @app.command()
 @use_yaml_config(param_name="config")
