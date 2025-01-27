@@ -496,7 +496,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         iterators = list(map(iter, iterables))
         if self.mode == "training":
             while True:
-                print(len(iterators))
+                print(len(iterators), probs)
                 idx = np.random.choice(range(len(iterators)), p=probs)
                 try:
                     yield self.to_hf_format(next(iterators[idx]))
