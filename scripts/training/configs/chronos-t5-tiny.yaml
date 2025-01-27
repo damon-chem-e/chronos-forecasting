@@ -1,9 +1,7 @@
 training_data_paths:
-- "/home/ubuntu/tsmixup-data.arrow"
-- "/home/ubuntu/kernelsynth-data.arrow"
+- "/nfs/sloanlab007/projects/chimera_proj/chronos_datasets/train-00000-of-00001.parquet"
 probability:
-- 0.9
-- 0.1
+- 1
 context_length: 512
 prediction_length: 64
 min_past: 60
