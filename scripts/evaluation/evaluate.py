@@ -124,7 +124,7 @@ def generate_forecasts(
 def main(
     config_path: Path,
     metrics_path: Path,
-    chronos_model_id: str = "/home/hanngao/chronos-forecasting/scripts/training/output/run-0/checkpoint-final/",
+    chronos_model_id: str,
     device: str = "cuda",
     torch_dtype: str = "bfloat16",
     batch_size: int = 32,
