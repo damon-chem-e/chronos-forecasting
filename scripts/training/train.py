@@ -29,6 +29,8 @@ from transformers import (
     Trainer,
     TrainingArguments,
 )
+import torch._dynamo
+torch._dynamo.config.suppress_errors = True
 import accelerate
 import gluonts
 from gluonts.dataset.common import FileDataset
