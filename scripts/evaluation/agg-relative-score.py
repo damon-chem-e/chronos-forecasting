@@ -55,13 +55,13 @@ def main(
     # )
     # agg_score_df.to_csv(f"{results_dir}/{model_name}-agg-rel-scores.csv")
 
-    # Check if the file exists before processing each benchmark
+    
     in_domain_path = results_dir / f"{model_name}-in-domain.csv"
     zero_shot_path = results_dir / f"{model_name}-zero-shot.csv"
 
     print("Looking for in-domain benchmark at:", in_domain_path, "and zero-shot benchmark at:", zero_shot_path)
 
-    # Initialize a dictionary to hold valid DataFrames
+    # Only keep valid DataFrames
     valid_benchmarks = {}
 
     try:
@@ -86,8 +86,9 @@ def main(
     except:
         print("No zero-shot benchmark found.")
 
-    # Concatenate only the valid benchmarks
-    if valid_benchmarks:
+    # Concatenate valid benchmarks
+    if valid_benchmarks: 
+        # we have at least 1 valid benchmark to show
         agg_score_df = pd.concat(valid_benchmarks, names=["benchmark"])
         agg_score_df.to_csv(f"{results_dir}/{model_name}-agg-rel-scores.csv")
     else:
