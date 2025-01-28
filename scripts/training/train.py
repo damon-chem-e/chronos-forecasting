@@ -672,6 +672,7 @@ def main(
 
     distls = None
     tokenizer = chronos_config.create_tokenizer()
+    print("Using distributional label smoothing: ", use_distls)
     if use_distls:
         distls = DistLS(boundaries=tokenizer.boundaries, 
                         variance=distls_variance,
