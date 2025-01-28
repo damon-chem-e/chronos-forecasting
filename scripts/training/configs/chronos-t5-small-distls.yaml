@@ -16,7 +16,7 @@ log_steps: 500
 per_device_train_batch_size: 32
 learning_rate: 0.001
 optim: adamw_torch_fused
-num_samples: 20
+num_samples: 1
 shuffle_buffer_length: 100_000
 gradient_accumulation_steps: 1
 model_id: google/t5-efficient-small
