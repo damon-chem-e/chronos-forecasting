@@ -1,5 +1,5 @@
 training_data_paths:
-- "training/zero_shot_datasets_train_val/monash_cif_2016.arrow"
+- "training/zero_shot_datasets_train_val/monash_cif_2016.arrow.arrow"
 
 probability:
 - 1.0
@@ -16,7 +16,7 @@ log_steps: 500
 per_device_train_batch_size: 32
 learning_rate: 0.001
 optim: adamw_torch_fused
-num_samples: 1
+num_samples: 20
 shuffle_buffer_length: 100_000
 gradient_accumulation_steps: 1
 model_id: google/t5-efficient-small
