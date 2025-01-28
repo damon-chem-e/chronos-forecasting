@@ -59,6 +59,8 @@ def main(
     in_domain_path = results_dir / f"{model_name}-in-domain.csv"
     zero_shot_path = results_dir / f"{model_name}-zero-shot.csv"
 
+    print("Looking for in-domain benchmark at:", in_domain_path, "and zero-shot benchmark at:", zero_shot_path)
+
     # Initialize a dictionary to hold valid DataFrames
     valid_benchmarks = {}
 
