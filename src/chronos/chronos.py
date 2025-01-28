@@ -152,6 +152,10 @@ class ChronosTokenizer:
             containing forecasted sample paths.
         """
         raise NotImplementedError()
+    
+    def non_quantized_label_input_transform(
+        self, label: torch.Tensor, scale: torch.Tensor) -> Tuple:
+        raise NotImplementedError()
 
 
 class MeanScaleUniformBins(ChronosTokenizer):
@@ -244,6 +248,45 @@ class MeanScaleUniformBins(ChronosTokenizer):
             )
 
         return token_ids, attention_mask
+
+    def non_quantized_label_input_transform(
+        self, label: torch.Tensor, scale: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        length = label.shape[-1]
+
+        assert length == self.config.prediction_length
+        context = label.to(dtype=torch.float32)
+        raw_attention_mask = ~torch.isnan(context)
+
+        if scale is None:
+            scale = torch.nansum(
+                torch.abs(context) * raw_attention_mask, dim=-1
+            ) / torch.nansum(raw_attention_mask, dim=-1)
+            scale[~(scale > 0)] = 1.0
+
+        scaled_context = context / scale.unsqueeze(dim=-1)
+        token_ids = (
+            torch.bucketize(
+                input=scaled_context,
+                boundaries=self.boundaries,
+                right=True,
+            )
+            + self.config.n_special_tokens
+        )
+
+        token_ids.clamp_(0, self.config.n_tokens - 1)
+        token_ids[~raw_attention_mask] = self.config.pad_token_id
+
+        if self.config.use_eos_token:
+            token_ids, attention_mask = self._append_eos_token(
+                token_ids=token_ids, attention_mask=raw_attention_mask
+            )
+
+            non_q_labels, _ = self._append_eos_token(
+                token_ids=scaled_context, attention_mask=raw_attention_mask
+            )
+
+        return token_ids, non_q_labels, attention_mask
 
     def output_transform(
         self, samples: torch.Tensor, scale: torch.Tensor

@@ -13,6 +13,9 @@ from copy import deepcopy
 from pathlib import Path
 from functools import partial
 from typing import List, Iterator, Optional, Dict
+import pickle
+import torch.profiler
+from distls import DistLS
 
 import typer
 from typer_config import use_yaml_config
@@ -309,6 +312,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         imputation_method: Optional[MissingValueImputation] = None,
         mode: str = "training",
         np_dtype=np.float32,
+        distls: DistLS = None,
     ) -> None:
         super().__init__()
 
@@ -327,6 +331,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         self.imputation_method = imputation_method or LeavesMissingValues()
         self.mode = mode
         self.np_dtype = np_dtype
+        self.distls = distls
 
     def preprocess_entry(self, entry: dict, mode: str) -> dict:
         # print("Entering preprocess_entry")
@@ -401,8 +406,13 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             past_target
         )
         future_target = torch.tensor(entry["future_target"]).unsqueeze(0)
-        labels, labels_mask = self.tokenizer.label_input_transform(future_target, scale)
+        labels, non_q_labels, labels_mask = self.tokenizer.non_quantized_label_input_transform(future_target, scale)
         labels[labels_mask == 0] = -100
+        non_q_labels[labels_mask == 0] = -100
+        
+        # Apply distributional label smoothing
+        if self.distls is not None:
+            probabilities = self.distls.precompute_probs(non_q_labels)
 
         if self.model_type == "causal":
             # The InstanceSplitter pads time series on the left to be equal to the
@@ -449,6 +459,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             "input_ids": input_ids.squeeze(0),
             "attention_mask": attention_mask.squeeze(0),
             "labels": labels.squeeze(0),
+            "probs": probabilities.squeeze(0)
         }
 
     def __iter__(self) -> Iterator:
@@ -504,12 +515,28 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             for entry in itertools.chain(*iterators):
                 yield self.to_hf_format(entry)
 
+class DistLSTrainer(Trainer):
+    def __init__(self, *args, **kwargs):
+        self.cross_entropy_loss = torch.nn.CrossEntropyLoss()
+        super().__init__(*args, **kwargs)
+
+    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        outputs = model(input_ids=inputs.get('input_ids'), 
+                        attention_mask=inputs.get('attention_mask'), 
+                        labels=inputs.get('labels'))
+        logits = outputs.logits
+        probs = inputs.get('probs')
+        print(logits.shape, probs.shape)
+        loss = self.cross_entropy_loss(logits.transpose(1, 2), probs)
+        return (loss, outputs) if return_outputs else loss
 
 @app.command()
 @use_yaml_config(param_name="config")
 def main(
     training_data_paths: str,
     probability: Optional[str] = None,
+    use_distls: bool = True,
+    distls_variance: float = 1.0,
     context_length: int = 512,
     prediction_length: int = 64,
     min_past: int = 64,
@@ -712,6 +739,7 @@ def main(
     model.config.chronos_config = chronos_config.__dict__
 
     shuffled_train_dataset = ChronosDataset(
+        tokenizer=tokenizer,
         datasets=train_datasets,
         probabilities=probability,
         tokenizer=chronos_config.create_tokenizer(),
@@ -721,6 +749,7 @@ def main(
         model_type=model_type,
         imputation_method=LastValueImputation() if model_type == "causal" else None,
         mode="training",
+        distls=distls if use_distls else None,
     ).shuffle(shuffle_buffer_length=shuffle_buffer_length)
     
 
@@ -748,10 +777,10 @@ def main(
     )
 
     # Create Trainer instance
-    trainer = Trainer(
+    trainer = DistLSTrainer(
         model=model,
         args=training_args,
-        train_dataset=shuffled_train_dataset,
+        train_dataset=shuffled_train_dataset
     )
     log_on_main("Training", logger)
 
