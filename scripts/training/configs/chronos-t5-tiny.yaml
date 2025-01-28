@@ -9,8 +9,8 @@ probability:
 - 0.2
 - 0.4
 
-use_distls: true
-distls_variance: 0.05
+# use_distls: true
+# distls_variance: 0.05
 
 context_length: 512
 prediction_length: 64
