@@ -512,12 +512,12 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
                     
                     print(f"this is the {self.count}th entry")
                     if self.count < 5:
-                        with open("/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/in_{count}.pkl", "wb") as f:
+                        with open(f"/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/in_{count}.pkl", "wb") as f:
                             pickle.dump(next_item, f)
                         print(f"{next_item=}")
                     out_item = self.to_hf_format(next_item)
                     if self.count < 5:                   
-                        with open("/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/out_{count}.pkl", "wb") as f:
+                        with open(f"/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/out_{count}.pkl", "wb") as f:
                             pickle.dump(out_item, f)
                         print(f"{out_item=}")
                     self.count += 1

@@ -8,8 +8,8 @@ use_distls: true
 distls_variance: 0.05
 
 context_length: 512
-prediction_length: 64
-min_past: 60
+prediction_length: 3 #64
+min_past: 5 #60
 max_steps: 200_000
 save_steps: 100_000
 log_steps: 500
