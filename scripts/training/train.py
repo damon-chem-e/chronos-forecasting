@@ -521,6 +521,7 @@ class DistLSTrainer(Trainer):
                         labels=inputs.get('labels'))
         logits = outputs.logits
         probs = inputs.get('probs')
+        print(logits.shape, probs.shape)
         loss = self.cross_entropy_loss(logits, probs)
         return (loss, outputs) if return_outputs else loss
 
