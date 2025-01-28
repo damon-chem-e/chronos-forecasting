@@ -76,14 +76,13 @@ def main(
         print("No in-domain benchmark found.") 
 
     try:
-        if os.path.exists(zero_shot_path):
-            zero_shot_agg_score_df = agg_relative_score(
-                zero_shot_path,
-                results_dir / f"{baseline_name}-zero-shot.csv",
-            )
-            zero_shot_agg_score_df.name = "value"
-            zero_shot_agg_score_df.index.name = "metric"
-            valid_benchmarks["zero-shot"] = zero_shot_agg_score_df
+        zero_shot_agg_score_df = agg_relative_score(
+            zero_shot_path,
+            results_dir / f"{baseline_name}-zero-shot.csv",
+        )
+        zero_shot_agg_score_df.name = "value"
+        zero_shot_agg_score_df.index.name = "metric"
+        valid_benchmarks["zero-shot"] = zero_shot_agg_score_df
     except:
         print("No zero-shot benchmark found.")
 
