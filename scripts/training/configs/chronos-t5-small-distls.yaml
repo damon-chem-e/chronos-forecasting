@@ -1,5 +1,5 @@
 training_data_paths:
-- "training/zero_shot_datasets_train_val/monash_cif_2016.arrow.arrow"
+- "training/zero_shot_datasets_train_val/monash_australian_electricity.arrow"
 
 probability:
 - 1.0
@@ -8,8 +8,8 @@ use_distls: true
 distls_variance: 0.05
 
 context_length: 512
-prediction_length: 3 #64
-min_past: 5 #60
+prediction_length: 64
+min_past: 60
 max_steps: 200_000
 save_steps: 100_000
 log_steps: 500
