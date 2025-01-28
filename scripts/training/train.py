@@ -540,6 +540,7 @@ def main(
     top_k: int = 50,
     top_p: float = 1.0,
     seed: Optional[int] = None,
+    base_fname: str = "run"
 ):
     if tf32 and not (
         torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8
@@ -587,7 +588,7 @@ def main(
 
     assert model_type in ["seq2seq", "causal"]
 
-    output_dir = get_next_path("run", base_dir=output_dir, file_type="")
+    output_dir = get_next_path(base_fname=base_fname, base_dir=output_dir, file_type="")
 
     log_on_main(f"Logging dir: {output_dir}", logger)
     log_on_main(
