@@ -522,7 +522,7 @@ class DistLSTrainer(Trainer):
         logits = outputs.logits
         probs = inputs.get('probs')
         print(logits.shape, probs.shape)
-        loss = self.cross_entropy_loss(logits, probs)
+        loss = self.cross_entropy_loss(logits.transpose(1, 2), probs)
         return (loss, outputs) if return_outputs else loss
 
 @app.command()
