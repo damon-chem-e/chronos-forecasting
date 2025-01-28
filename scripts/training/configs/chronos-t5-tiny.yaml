@@ -10,7 +10,7 @@ probability:
 - 0.4
 
 use_distls: true
-distls_variance: 0.0001
+distls_variance: 0.00001
 
 context_length: 512
 prediction_length: 64
