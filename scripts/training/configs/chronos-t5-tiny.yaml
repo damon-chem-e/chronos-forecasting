@@ -1,13 +1,13 @@
 training_data_paths:
 - "wind_farms_daily"
-# - "wind_farms_hourly"
-# - "mexico_city_bikes"
-# - "wiki_daily_100k"
+- "wind_farms_hourly"
+- "mexico_city_bikes"
+- "wiki_daily_100k"
 probability:
 - 0.2
-# - 0.2
-# - 0.2
-# - 0.4
+- 0.2
+- 0.2
+- 0.4
 
 use_distls: true
 distls_variance: 0.05
