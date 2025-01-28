@@ -16,7 +16,6 @@ class DistLS(torch.nn.Module):
         super(DistLS, self).__init__()
         self.variance = variance
         self.boundaries = boundaries
-        print(boundaries)
         self.special_tokens = special_tokens
         self.bin_edges = list(zip(self.boundaries[:-1], self.boundaries[1:]))
 
