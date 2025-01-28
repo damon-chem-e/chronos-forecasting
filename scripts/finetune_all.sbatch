@@ -25,7 +25,7 @@ ARG=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" datasets.txt)
 
 CUDA_VISIBLE_DEVICES=0 python \
     training/train.py --config training/configs/chronos-t5-small.yaml \
-    --training-data-paths "preprocessing_training_data/zero_shot_datasets_train_val/train/$ARG" \
+    --training-data-paths "['preprocessing_training_data/zero_shot_datasets_train_val/train/$ARG']" \
     --model-id amazon/chronos-t5-small \
     --no-random-init \
     --max-steps 1000 \
