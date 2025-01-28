@@ -2,7 +2,8 @@ training_data_paths:
 - "wind_farms_daily"
 - "wind_farms_hourly"
 - "mexico_city_bikes"
-- "m5"
+- "wiki_daily_100k"
+
 probability:
 - 0.2
 - 0.2
