@@ -497,9 +497,12 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
 
         iterators = list(map(iter, iterables))
         if self.mode == "training":
+            count = 0
             while True:
                 idx = np.random.choice(range(len(iterators)), p=probs)
                 try:
+                    count = count + 1
+                    print("Count: ", count)
                     yield self.to_hf_format(next(iterators[idx]))
                 except StopIteration:
                     probs[idx] = 0
