@@ -499,6 +499,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         # print(f"{iterators=}")
         # raise Exception
         if self.mode == "training":
+            self.count = 0
             try:
                 while True:
                     # print(len(iterators), probs)
@@ -509,7 +510,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
                     # print(f"{iterators=}")
                     next_item = next(iterators[idx])
                     
-                    print(f"this is the {count}th entry")
+                    print(f"this is the {self.count}th entry")
                     if self.count < 5:
                         with open("/nfs/sloanlab007/projects/chimera_proj/chronos-forecasting/scripts/debug/in_{count}.pkl", "wb") as f:
                             pickle.dump(next_item, f)
