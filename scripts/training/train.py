@@ -738,11 +738,17 @@ def main(
     # Add extra items to model config so that it's saved in the ckpt
     model.config.chronos_config = chronos_config.__dict__
 
+    distls = None
+    tokenizer = chronos_config.create_tokenizer()
+    if use_distls:
+        distls = DistLS(boundaries=tokenizer.boundaries, 
+                        variance=distls_variance,
+                        special_tokens=[pad_token_id, eos_token_id, -100])
+
     shuffled_train_dataset = ChronosDataset(
-        tokenizer=tokenizer,
         datasets=train_datasets,
         probabilities=probability,
-        tokenizer=chronos_config.create_tokenizer(),
+        tokenizer=tokenizer,
         context_length=context_length,
         prediction_length=prediction_length,
         min_past=min_past,
@@ -751,7 +757,6 @@ def main(
         mode="training",
         distls=distls if use_distls else None,
     ).shuffle(shuffle_buffer_length=shuffle_buffer_length)
-    
 
     # Define training args
     training_args = TrainingArguments(
