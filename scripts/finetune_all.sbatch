@@ -1,9 +1,9 @@
 #!/bin/bash
 #SBATCH -p sched_mit_sloan_gpu
-#SBATCH --job-name=finetune_all     # Job name
+#SBATCH --job-name=finetune_all         # Job name
 #SBATCH --output=output_%A_%a.out       # Standard output log (%A = Job ID, %a = Array index)
 #SBATCH --error=error_%A_%a.err         # Standard error log
-#SBATCH --array=0-25                     # Array range (adjust based on the number of arguments)
+#SBATCH --array=0-26                    # Array range (adjust based on the number of arguments)
 #SBATCH --time=01:00:00                 # Max run time (hh:mm:ss)
 #SBATCH --mem=8G                        # Memory per job
 #SBATCH --cpus-per-task=4               # Number of CPUs per job

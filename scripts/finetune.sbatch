@@ -2,9 +2,9 @@
 #SBATCH -N 1
 #SBATCH -n 4
 #SBATCH -t 60
-#SBATCH -p sched_mit_sloan_gpu_r8
+#SBATCH -p sched_mit_sloan_gpu
 #SBATCH --gres=gpu:1
-#SBATCH --mem=256GB
+#SBATCH --mem=8GB
 
 # Function to add directories to the PATH
 pathadd() {

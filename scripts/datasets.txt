@@ -1,3 +1,4 @@
+dominick.arrow
 ercot.arrow
 ETTh.arrow
 ETTm.arrow
