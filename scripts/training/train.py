@@ -412,6 +412,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         
         # Apply distributional label smoothing
         if self.distls is not None:
+            print(f"Applying distls to {non_q_labels} of shape {non_q_labels.shape}")
             probabilities = self.distls.precompute_probs(non_q_labels)
 
         if self.model_type == "causal":
