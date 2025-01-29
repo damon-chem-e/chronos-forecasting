@@ -6,7 +6,7 @@ probability:
 
 context_length: 512
 prediction_length: 64
-min_past: 60
+min_past: 1
 max_steps: 200_000
 save_steps: 100_000
 log_steps: 500
