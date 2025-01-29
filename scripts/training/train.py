@@ -411,6 +411,9 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         labels[labels_mask == 0] = -100
         non_q_labels[labels_mask == 0] = -100
         # non_q_labels have shape (1, prediction_length)
+
+        non_q_history = self.tokenizer.non_quantized_label_input_transform(past_target, scale)
+        print("non_q_history", non_q_history)
         
         # Apply distributional label smoothing
         if self.distls is not None:
