@@ -250,11 +250,15 @@ class MeanScaleUniformBins(ChronosTokenizer):
         return token_ids, attention_mask
 
     def non_quantized_label_input_transform(
-        self, label: torch.Tensor, scale: torch.Tensor
+        self, label: torch.Tensor, scale: torch.Tensor, is_history: bool=False,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         length = label.shape[-1]
 
-        assert length == self.config.prediction_length
+        if is_history:
+            assert length == self.config.context_length
+        else:
+            assert length == self.config.prediction_length
+            
         context = label.to(dtype=torch.float32)
         raw_attention_mask = ~torch.isnan(context)
 
