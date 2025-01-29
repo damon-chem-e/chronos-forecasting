@@ -405,14 +405,15 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         input_ids, attention_mask, scale = self.tokenizer.context_input_transform(
             past_target
         )
+
         future_target = torch.tensor(entry["future_target"]).unsqueeze(0)
         labels, non_q_labels, labels_mask = self.tokenizer.non_quantized_label_input_transform(future_target, scale)
         labels[labels_mask == 0] = -100
         non_q_labels[labels_mask == 0] = -100
+        # non_q_labels have shape (1, prediction_length)
         
         # Apply distributional label smoothing
         if self.distls is not None:
-            print(f"Applying distls to {non_q_labels} of shape {non_q_labels.shape}")
             probabilities = self.distls.precompute_probs(non_q_labels)
 
         if self.model_type == "causal":
