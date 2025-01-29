@@ -10,9 +10,11 @@ DEFAULT_RESULTS_DIR = Path(__file__).parent / "results"
 def agg_relative_score(model_csv: Path, baseline_csv: Path):
     model_df = pd.read_csv(model_csv).set_index("dataset")
     baseline_df = pd.read_csv(baseline_csv).set_index("dataset")
+    dominick_filtered_baseline_df = baseline_dfloc[baseline_df.index == "dominick"]
     relative_score = model_df.drop("model", axis="columns") / baseline_df.drop(
         "model", axis="columns"
     )
+    print("relative score is", relative_score)
     return relative_score.agg(gmean)
 
 
