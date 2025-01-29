@@ -154,7 +154,7 @@ class ChronosTokenizer:
         raise NotImplementedError()
     
     def non_quantized_label_input_transform(
-        self, label: torch.Tensor, scale: torch.Tensor, is_history: bool=False) -> Tuple:
+        self, label: torch.Tensor, scale: torch.Tensor) -> Tuple:
         raise NotImplementedError()
 
 
@@ -254,11 +254,7 @@ class MeanScaleUniformBins(ChronosTokenizer):
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         length = label.shape[-1]
 
-        if is_history:
-            assert length == self.config.context_length
-        else:
-            assert length == self.config.prediction_length
-            
+        assert (length == self.config.prediction_length or length == self.config.context_length)
         context = label.to(dtype=torch.float32)
         raw_attention_mask = ~torch.isnan(context)
 
