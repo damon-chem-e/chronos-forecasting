@@ -12,4 +12,4 @@
 module load anaconda3/2023.07
 source /home/hanngao/.bashrc
 source activate nlp2
-python evaluate.py configs/zero-shot.yaml /home/hanngao/chronos-forecasting/scripts/evaluation/results /nfs/sloanlab007/projects/chimera_proj/models/run-ce-dominick/checkpoint-final
+python evaluate.py configs/zero-shot.yaml /home/hanngao/chronos-forecasting/scripts/evaluation/results/ce_dominick-zero-shot /nfs/sloanlab007/projects/chimera_proj/models/run-ce-dominick/checkpoint-final
