@@ -4,7 +4,7 @@ from scipy.stats import norm
 class DistLS(torch.nn.Module):
     """Distributional Label Smoothing centered on true values."""
     
-    def __init__(self, boundaries: torch.Tensor, variance: float, special_tokens: list, sparse_threshold: float=1e-3):
+    def __init__(self, boundaries: torch.Tensor, variance: float, special_tokens: list):
         """Create a DistLS object.
 
         Args:
@@ -17,7 +17,6 @@ class DistLS(torch.nn.Module):
         self.variance = variance
         self.boundaries = boundaries
         self.special_tokens = special_tokens
-        self.sparse_threshold = sparse_threshold
         self.bin_edges = list(zip(self.boundaries[:-1], self.boundaries[1:]))
 
     def precompute_probs(self, labels: torch.Tensor) -> torch.Tensor:
@@ -30,10 +29,9 @@ class DistLS(torch.nn.Module):
                 (ex. PAD, EOS) in shape [], [N], or [N, d_1, d_2, ..., d_K].
 
         Returns:
-            torch.Tensor: Sparse class probabilities including special tokens 
+            torch.Tensor: Class probabilities including special tokens 
                 in shape [C], [N, C], or [N, C, d_1, d_2, ..., d_K]
         """
-        print(labels.shape)
         # Flatten labels to handle all cases uniformly
         flat_labels = labels.flatten()
 
@@ -66,33 +64,4 @@ class DistLS(torch.nn.Module):
         result = probs.view(result_shape)
         result = result.permute(0, -1, *range(1, result.ndim-1))  # Move new dimension C to be the 2nd dimension
 
-        result = self._sparsify_coo(dense=result, threshold=self.sparse_threshold)
         return result
-    
-    def cross_entropy(self, inputs, target):
-        """Cross entropy loss compatible with both dense and COO sparse tensors."""
-        input = torch.log_softmax(inputs, dim=1)
-        output = -(input * target).sum(dim=1)
-        return self.sparse_mean(output) if output.is_sparse else output.mean()
-  
-    def _sparse_mean(self, sparse_tensor):
-        """Calculate mean including zero elements"""
-        values = sparse_tensor._values()
-        total_elements = torch.prod(torch.tensor(sparse_tensor.size()))
-        
-        if total_elements == 0:
-            return torch.tensor(0.0)
-        
-        return values.sum() / total_elements
-    
-    def _sparsify_coo(self, dense: torch.Tensor, threshold: float):
-        mask = dense.abs() >= threshold
-        indices = mask.nonzero(as_tuple=False).T
-        vals = dense[mask]
-        coo = torch.sparse_coo_tensor(
-            indices=indices,
-            values=vals,
-            size=dense.shape
-        )
-        
-        return coo
