@@ -620,22 +620,23 @@ def main(
     #     for data_path in training_data_paths
     # ]
     
-        train_datasets = []
-        for data_path in training_data_paths:
-            ds = FileDataset(path=Path("/nfs/sloanlab007/projects/chimera_proj/chronos_datasets/hugging_face_datasets/data")/Path(data_path), freq="h"),
-            ds.set_format("numpy")
-            new_col = [dataset["timestamp"] for dataset in ds]
-            ds = ds.add_column("start", new_col)
-            train_datasets.append(
-                Filter(
-                partial(
-                    has_enough_observations,
-                    min_length=min_past + prediction_length,
-                    max_missing_prop=max_missing_prop,
-                ),
-                ds,
-            )
+    train_datasets = []
+    for data_path in training_data_paths:
+        ds = FileDataset(path=Path("/nfs/sloanlab007/projects/chimera_proj/chronos_datasets/hugging_face_datasets/data")/Path(data_path), freq="h"),
+        ds.set_format("numpy")
+        new_col = [dataset["timestamp"] for dataset in ds]
+        ds = ds.add_column("start", new_col)
+        train_datasets.append(
+            Filter(
+            partial(
+                has_enough_observations,
+                min_length=min_past + prediction_length,
+                max_missing_prop=max_missing_prop,
+            ),
+            ds,
         )
+    )
+    print("DONE")
 
         # print("found path")
         # train_datasets = [
