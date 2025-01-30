@@ -5,6 +5,7 @@
 #SBATCH -p sched_mit_thesmar
 #SBATCH --gres=gpu:1
 #SBATCH --mem=250GB
+#SBATCH --job-name=finetune_distls
 
 # Function to add directories to the PATH
 pathadd() {
