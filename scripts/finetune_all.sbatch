@@ -23,11 +23,17 @@ source activate chronos2
 
 ARG=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" datasets.txt)
 
+LINE_NUM=$((SLURM_ARRAY_TASK_ID * 2 + 1))  # Adjust index to read pairs
+DATASET=$(sed -n "${LINE_NUM}p" datasets.txt)
+PRED_LEN=$(sed -n "$((LINE_NUM + 1))p" datasets.txt)
+
 CUDA_VISIBLE_DEVICES=0 python \
     training/train.py --config training/configs/chronos-t5-small.yaml \
-    --training-data-paths "['preprocessing_training_data/zero_shot_datasets_train_val/train/$ARG']" \
+    --training-data-paths "['preprocessing_training_data/zero_shot_datasets_train_val/train/$DATASET']" \
+    --prediction-length $PRED_LEN \
     --base-fname "run-$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID" \
     --model-id amazon/chronos-t5-small \
     --no-random-init \
     --max-steps 1000 \
     --learning-rate 0.001
+    
