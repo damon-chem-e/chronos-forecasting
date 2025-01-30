@@ -33,6 +33,7 @@ class DistLS(torch.nn.Module):
             torch.Tensor: Sparse class probabilities including special tokens 
                 in shape [C], [N, C], or [N, C, d_1, d_2, ..., d_K]
         """
+        print("LABELS: ", labels)
         # Flatten labels to handle all cases uniformly
         flat_labels = labels.flatten()
 
@@ -86,6 +87,7 @@ class DistLS(torch.nn.Module):
         return values.sum() / total_elements
     
     def _sparsify_coo(dense: torch.Tensor, threshold: float):
+        print(f"DENSE: {dense} AND {threshold}")
         mask = dense.abs() >= threshold
         indices = mask.nonzero(as_tuple=False).T
         vals = dense[mask]
