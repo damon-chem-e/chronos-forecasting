@@ -13,6 +13,7 @@ class DistLS(torch.nn.Module):
             special_tokens (list): List of ids for bins that represent special tokens. 
                 For example, [0, 1, -100] which represents PAD, EOS (end of sequence), and attention mask tokens.
         """
+        print(F"SPARSE THRESHOLD: {sparse_threshold}")
         super(DistLS, self).__init__()
         self.variance = variance
         self.boundaries = boundaries
