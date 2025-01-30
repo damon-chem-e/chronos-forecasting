@@ -13,7 +13,6 @@ class DistLS(torch.nn.Module):
             special_tokens (list): List of ids for bins that represent special tokens. 
                 For example, [0, 1, -100] which represents PAD, EOS (end of sequence), and attention mask tokens.
         """
-        print(F"SPARSE THRESHOLD: {sparse_threshold}")
         super(DistLS, self).__init__()
         self.variance = variance
         self.boundaries = boundaries
@@ -66,8 +65,7 @@ class DistLS(torch.nn.Module):
         result = probs.view(result_shape)
         result = result.permute(0, -1, *range(1, result.ndim-1))  # Move new dimension C to be the 2nd dimension
 
-        print(self.sparse_threshold)
-        result = self._sparsify_coo(result, threshold=self.sparse_threshold)
+        result = self._sparsify_coo(dense=result, threshold=self.sparse_threshold)
         return result
     
     def cross_entropy(self, inputs, target):
@@ -87,7 +85,6 @@ class DistLS(torch.nn.Module):
         return values.sum() / total_elements
     
     def _sparsify_coo(dense: torch.Tensor, threshold: float):
-        print(dense.shape, threshold.shape)
         mask = dense.abs() >= threshold
         indices = mask.nonzero(as_tuple=False).T
         vals = dense[mask]
