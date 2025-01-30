@@ -19,7 +19,7 @@ source /home/adewinmb/.bashrc
 source activate chronos2
 
 python evaluation/evaluate.py evaluation/configs/zero-shot.yaml evaluation/results/chronos-t5-small-zero-shot.csv \
-    --chronos-model-id "amazon/chronos-t5-small" \
+    --chronos-model-id "output/run-62658600-23-0/checkpoint-final" \
     --eval-dataset-name "monash_tourism_yearly" \
     --batch-size=32 \
     --device=cuda:0 \
