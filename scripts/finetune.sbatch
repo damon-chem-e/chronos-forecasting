@@ -2,9 +2,10 @@
 #SBATCH -N 1
 #SBATCH -n 4
 #SBATCH -t 60
-#SBATCH -p sched_mit_thesmar
+#SBATCH -p sched_mit_sloan_gpu
 #SBATCH --gres=gpu:1
-#SBATCH --mem=8GB
+#SBATCH --mem=128GB
+#SBATCH --job-name=finetune_sparse
 
 # Function to add directories to the PATH
 pathadd() {
