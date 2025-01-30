@@ -527,7 +527,7 @@ class DistLSTrainer(Trainer):
 @app.command()
 @use_yaml_config(param_name="config")
 def main(
-    training_data_paths: str,
+    training_data_paths: str = "",
     probability: Optional[str] = None,
     use_distls: bool = True,
     distls_variance: float = 1.0,
