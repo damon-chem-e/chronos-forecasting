@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -p sched_mit_sloan_gpu
+#SBATCH -p sched_mit_sloan_gpu_r8
 #SBATCH --job-name=finetune_all         # Job name
 #SBATCH --output=output_%A_%a.out       # Standard output log (%A = Job ID, %a = Array index)
 #SBATCH --error=error_%A_%a.err         # Standard error log
