@@ -409,7 +409,6 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         
         # Apply distributional label smoothing
         if self.distls is not None:
-            print(non_q_labels.shape)
             probabilities = self.distls.precompute_probs(non_q_labels)
 
         if self.model_type == "causal":
@@ -453,6 +452,7 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             input_ids[~attention_mask] = self.tokenizer.config.pad_token_id
             labels[~attention_mask] = -100
 
+        print(probabilities.shape)
         return {
             "input_ids": input_ids.squeeze(0),
             "attention_mask": attention_mask.squeeze(0),
