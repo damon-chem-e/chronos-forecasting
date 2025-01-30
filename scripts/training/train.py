@@ -452,7 +452,6 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             input_ids[~attention_mask] = self.tokenizer.config.pad_token_id
             labels[~attention_mask] = -100
 
-        print("PROBABILITIES SHAPE: ", probabilities.shape)
         return {
             "input_ids": input_ids.squeeze(0),
             "attention_mask": attention_mask.squeeze(0),

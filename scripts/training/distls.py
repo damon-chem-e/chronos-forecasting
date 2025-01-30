@@ -33,6 +33,7 @@ class DistLS(torch.nn.Module):
             torch.Tensor: Sparse class probabilities including special tokens 
                 in shape [C], [N, C], or [N, C, d_1, d_2, ..., d_K]
         """
+        print(labels.shape)
         # Flatten labels to handle all cases uniformly
         flat_labels = labels.flatten()
 
