@@ -24,8 +24,8 @@ source activate chronos2
 # Read dataset name from dataset_names.txt based on array task ID
 DATASET_NAME=$(sed -n "${SLURM_ARRAY_TASK_ID}p" dataset_names.txt)
 
-python evaluation/evaluate.py evaluation/configs/zero-shot.yaml evaluation/results/$SLURM_JOB_ID-$DATASET_NAME.csv \
-    --chronos-model-id "amazon/chronos-t5-small" \
+python evaluation/evaluate.py evaluation/configs/zero-shot.yaml evaluation/results/$DATASET_NAME-$SLURM_ARRAY_TASK_ID.csv \
+    --chronos-model-id "output/run-$SLURM_ARRAY_TASK_ID/checkpoint-final" \
     --eval-dataset-name $DATASET_NAME \
     --batch-size=32 \
     --device=cuda:0 \
