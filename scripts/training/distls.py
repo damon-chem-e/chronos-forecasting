@@ -65,6 +65,7 @@ class DistLS(torch.nn.Module):
         result = probs.view(result_shape)
         result = result.permute(0, -1, *range(1, result.ndim-1))  # Move new dimension C to be the 2nd dimension
 
+        print(self.sparse_threshold)
         result = self._sparsify_coo(result, threshold=self.sparse_threshold)
         return result
     
@@ -85,6 +86,7 @@ class DistLS(torch.nn.Module):
         return values.sum() / total_elements
     
     def _sparsify_coo(dense: torch.Tensor, threshold: float):
+        print(dense.shape, threshold.shape)
         mask = dense.abs() >= threshold
         indices = mask.nonzero(as_tuple=False).T
         vals = dense[mask]
