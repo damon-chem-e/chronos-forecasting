@@ -26,7 +26,6 @@ DATASET_NAME=$(sed -n "${SLURM_ARRAY_TASK_ID}p" dataset_names.txt)
 
 python evaluation/evaluate.py evaluation/configs/zero-shot.yaml evaluation/results/$DATASET_NAME-$SLURM_ARRAY_TASK_ID.csv \
     --chronos-model-id "output/run-$SLURM_ARRAY_TASK_ID/checkpoint-final" \
-    --eval-dataset-name $DATASET_NAME \
     --batch-size=32 \
     --device=cuda:0 \
     --num-samples 20
