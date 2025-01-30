@@ -2,7 +2,7 @@
 #SBATCH -N 1
 #SBATCH -n 4
 #SBATCH -t 60
-#SBATCH -p sched_mit_sloan_gpu
+#SBATCH -p sched_mit_thesmar
 #SBATCH --gres=gpu:1
 #SBATCH --mem=8GB
 
