@@ -608,26 +608,20 @@ def main(
         logger,
     )
 
-    try: 
-        print("found path")
-        
-        # ds = datasets.load_dataset("autogluon/chronos_datasets", data_path, split="train")
-        # ds.set_format("numpy")
-        # new_col = [dataset["timestamp"] for dataset in ds]
-        # ds = ds.add_column("start", new_col)
-
-        # train_datasets = [
-        #     Filter(
-        #         partial(
-        #             has_enough_observations,
-        #             min_length=min_past + prediction_length,
-        #             max_missing_prop=max_missing_prop,
-        #         ),
-        #         ds,
-        #     )
-        #     for data_path in training_data_paths
-        # ]
-
+    try:     
+        train_datasets = [
+            Filter(
+                partial(
+                    has_enough_observations,
+                    min_length=min_past + prediction_length,
+                    max_missing_prop=max_missing_prop,
+                ),
+                FileDataset(path=Path("/projects/chimera_proj/chronos_datasets/hugging_face_datasets/data")/Path(data_path), freq="h"),
+            )
+            for data_path in training_data_paths
+        ]
+        print("works")
+    except:
         train_datasets = []
         for data_path in training_data_paths:
             ds = datasets.load_dataset("autogluon/chronos_datasets", data_path, split="train")
@@ -657,26 +651,26 @@ def main(
         #     )
         #     for data_path in training_data_paths
         # ]
-    except:
-        print("no path found")
+    # except:
+    #     print("no path found")
 
-        for data_path in training_data_paths:
-            ds = datasets.load_dataset("autogluon/chronos_datasets", data_path, split="train")
-            ds.save_to_disk(f"./{data_path}.hf")  
+    #     for data_path in training_data_paths:
+    #         ds = datasets.load_dataset("autogluon/chronos_datasets", data_path, split="train")
+    #         ds.save_to_disk(f"./{data_path}.hf")  
 
-        print("found path")
+    #     print("found path")
 
-        train_datasets = [
-            Filter(
-                partial(
-                    has_enough_observations,
-                    min_length=min_past + prediction_length,
-                    max_missing_prop=max_missing_prop,
-                ), 
-                FileDataset(path=Path(data_path + ".hf"), freq="h"),
-            )
-            for data_path in training_data_paths
-        ]
+    #     train_datasets = [
+    #         Filter(
+    #             partial(
+    #                 has_enough_observations,
+    #                 min_length=min_past + prediction_length,
+    #                 max_missing_prop=max_missing_prop,
+    #             ), 
+    #             FileDataset(path=Path(data_path + ".hf"), freq="h"),
+    #         )
+    #         for data_path in training_data_paths
+    #     ]
 
     log_on_main("Initializing model", logger)
 
