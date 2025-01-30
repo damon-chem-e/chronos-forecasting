@@ -542,6 +542,7 @@ def main(
     seed: Optional[int] = None,
     base_fname: str = "run"
 ):
+    log_on_main(f"Using prediction length: {prediction_length}", logger)
     if tf32 and not (
         torch.cuda.is_available() and torch.cuda.get_device_capability()[0] >= 8
     ):
