@@ -9,7 +9,7 @@ distls_variance: 0.05
 
 context_length: 512
 prediction_length: 64
-min_past: 60
+min_past: 4
 max_steps: 200_000
 save_steps: 100_000
 log_steps: 500
