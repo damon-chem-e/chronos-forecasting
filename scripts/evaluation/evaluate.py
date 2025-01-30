@@ -201,7 +201,7 @@ def main(
         dataset_name = config["name"]
         prediction_length = config["prediction_length"]
 
-        logger.info(f"Loading {dataset_name}")
+        logger.info(f"Loading {dataset_name} with prediction length of {prediction_length}")
         test_data = load_and_split_dataset(backtest_config=config)
 
         logger.info(
