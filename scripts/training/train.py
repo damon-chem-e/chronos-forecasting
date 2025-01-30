@@ -511,8 +511,8 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
                 yield self.to_hf_format(entry)
 
 class DistLSTrainer(Trainer):
-    def __init__(self, *args, **kwargs):
-        self.cross_entropy_loss = torch.nn.CrossEntropyLoss()
+    def __init__(self, distls: DistLS, *args, **kwargs):
+        self.distls = distls
         super().__init__(*args, **kwargs)
     
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
@@ -521,7 +521,7 @@ class DistLSTrainer(Trainer):
                         labels=inputs.get('labels'))
         logits = outputs.logits
         probs = inputs.get('probs')
-        loss = self.cross_entropy_loss(logits.transpose(1, 2), probs)
+        loss = self.distls.cross_entropy(logits.transpose(1, 2), probs)
         return (loss, outputs) if return_outputs else loss
 
 @app.command()
@@ -676,7 +676,8 @@ def main(
     if use_distls:
         distls = DistLS(boundaries=tokenizer.boundaries, 
                         variance=distls_variance,
-                        special_tokens=[pad_token_id, eos_token_id, -100])
+                        special_tokens=[pad_token_id, eos_token_id, -100],
+                        sparse_threshold=1e-3)
 
     shuffled_train_dataset = ChronosDataset(
         datasets=train_datasets,
@@ -716,6 +717,7 @@ def main(
 
     trainer = DistLSTrainer(
         model=model,
+        distls=distls,
         args=training_args,
         train_dataset=shuffled_train_dataset
     )
