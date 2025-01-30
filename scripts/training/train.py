@@ -677,8 +677,7 @@ def main(
     if use_distls:
         distls = DistLS(boundaries=tokenizer.boundaries, 
                         variance=distls_variance,
-                        special_tokens=[pad_token_id, eos_token_id, -100],
-                        sparse_threshold=1e-3)
+                        special_tokens=[pad_token_id, eos_token_id, -100])
 
     shuffled_train_dataset = ChronosDataset(
         datasets=train_datasets,
