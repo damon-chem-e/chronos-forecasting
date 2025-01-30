@@ -124,6 +124,7 @@ def generate_forecasts(
 def main(
     config_path: Path,
     metrics_path: Path,
+    eval_dataset_name: str = "", # If provided, model will only be evaluated on this one dataset.
     chronos_model_id: str = "amazon/chronos-t5-small",
     device: str = "cuda",
     torch_dtype: str = "bfloat16",
@@ -196,13 +197,16 @@ def main(
     with open(config_path) as fp:
         backtest_configs = yaml.safe_load(fp)
 
-    result_rows = []
-    for config in backtest_configs:
-        dataset_name = config["name"]
-        prediction_length = config["prediction_length"]
+    # Find the config with the specified name
+    selected_config = next((config for config in backtest_configs if config["name"] == eval_dataset_name), None)
+
+    if selected_config is not None:
+        # Perform operations on the selected config
+        dataset_name = selected_config["name"]
+        prediction_length = selected_config["prediction_length"]
 
         logger.info(f"Loading {dataset_name}")
-        test_data = load_and_split_dataset(backtest_config=config)
+        test_data = load_and_split_dataset(backtest_config=selected_config)
 
         logger.info(
             f"Generating forecasts for {dataset_name} "
@@ -230,9 +234,10 @@ def main(
             .reset_index(drop=True)
             .to_dict(orient="records")
         )
-        result_rows.append(
-            {"dataset": dataset_name, "model": chronos_model_id, **metrics[0]}
-        )
+        result_rows = [{"dataset": dataset_name, "model": chronos_model_id, **metrics[0]}]
+    else:
+        print(f"No configuration found with the name {eval_dataset_name}")
+        return
 
     # Save results to a CSV file
     results_df = (
