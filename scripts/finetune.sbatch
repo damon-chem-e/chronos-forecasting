@@ -22,6 +22,7 @@ CUDA_VISIBLE_DEVICES=0 python \
     training/train.py --config training/configs/chronos-t5-small.yaml \
     --model-id amazon/chronos-t5-small \
     --no-random-init \
+    --prediction-length 4 \
     --max-steps 1000 \
     --learning-rate 0.001
     
