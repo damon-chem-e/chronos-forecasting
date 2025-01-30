@@ -21,8 +21,6 @@ module load anaconda3/2023.07
 source /home/adewinmb/.bashrc
 source activate chronos2
 
-ARG=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" datasets.txt)
-
 LINE_NUM=$((SLURM_ARRAY_TASK_ID * 2 + 1))  # Adjust index to read pairs
 DATASET=$(sed -n "${LINE_NUM}p" datasets.txt)
 PRED_LEN=$(sed -n "$((LINE_NUM + 1))p" datasets.txt)
@@ -36,4 +34,3 @@ CUDA_VISIBLE_DEVICES=0 python \
     --no-random-init \
     --max-steps 1000 \
     --learning-rate 0.001
-    
