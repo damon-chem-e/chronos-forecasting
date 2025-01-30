@@ -4,7 +4,7 @@
 #SBATCH -t 60
 #SBATCH -p sched_mit_thesmar
 #SBATCH --gres=gpu:1
-#SBATCH --mem=8GB
+#SBATCH --mem=250GB
 
 # Function to add directories to the PATH
 pathadd() {
