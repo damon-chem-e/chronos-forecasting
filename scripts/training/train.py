@@ -615,7 +615,7 @@ def main(
                 min_length=min_past + prediction_length,
                 max_missing_prop=max_missing_prop,
             ),
-            FileDataset(path=Path("/projects/chimera_proj/chronos_datasets/hugging_face_datasets/data")/Path(data_path), freq="h"),
+            FileDataset(path=Path("/nfs/sloanlab007/projects/chimera_proj/chronos_datasets/hugging_face_datasets/data")/Path(data_path), freq="h"),
         )
         for data_path in training_data_paths
     ]
