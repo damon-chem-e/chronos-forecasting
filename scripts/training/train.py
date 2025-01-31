@@ -522,6 +522,14 @@ class DistLSTrainer(Trainer):
         logits = outputs.logits
         probs = inputs.get('probs')
         loss = self.cross_entropy_loss(logits.transpose(1, 2), probs)
+        
+        if is_main_process() and not hasattr(self, 'printed_once'):
+            torch.set_printoptions(profile='full')
+            print("PROBABILITIES: ", torch.argmax(probs))
+            print("LABELS: ", inputs.get('labels'))
+            torch.set_printoptions(profile='default')
+            self.printed_once = True
+        
         return (loss, outputs) if return_outputs else loss
 
 @app.command()
