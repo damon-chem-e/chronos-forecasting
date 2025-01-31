@@ -525,8 +525,8 @@ class DistLSTrainer(Trainer):
         
         if is_main_process() and not hasattr(self, 'printed_once'):
             torch.set_printoptions(profile='full')
-            print("PROBABILITIES: ", torch.argmax(probs))
-            print("LABELS: ", inputs.get('labels'))
+            print("PROBABILITIES: ", probs.shape, torch.argmax(probs, dim=-1))
+            print("LABELS: ", inputs.get('labels').shape, inputs.get('labels'))
             torch.set_printoptions(profile='default')
             self.printed_once = True
         
