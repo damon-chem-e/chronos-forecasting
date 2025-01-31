@@ -206,7 +206,7 @@ class MeanScaleUniformBins(ChronosTokenizer):
         return token_ids, attention_mask, scale
 
     def _append_eos_token(
-        self, token_ids: torch.Tensor, attention_mask: torch.Tensor, temp_eos_token
+        self, token_ids: torch.Tensor, attention_mask: torch.Tensor, temp_eos_token=None
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         batch_size = token_ids.shape[0]
         
