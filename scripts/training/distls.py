@@ -66,8 +66,8 @@ class DistLS(torch.nn.Module):
 
         if not hasattr(self, 'printed_once'):
             torch.set_printoptions(profile='full')
-            print("LABELS IN DISTLS: ", labels[0].shape, labels[0])
-            print("PROBS IN DISTLS: ", result[0].shape, torch.argmax(result[0], dim=0))
+            print("LABELS IN DISTLS: ", labels.shape, labels)
+            print("PROBS IN DISTLS: ", result.shape, torch.argmax(result, dim=1))
             torch.set_printoptions(profile='default')
             self.printed_once = True
 
