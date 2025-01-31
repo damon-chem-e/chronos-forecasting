@@ -4,7 +4,7 @@
 #SBATCH --output=output_%A_%a.out       # Standard output log (%A = Job ID, %a = Array index)
 #SBATCH --error=error_%A_%a.err         # Standard error log
 #SBATCH --array=0-26                    # Array range (adjust based on the number of arguments)
-#SBATCH --time=01:00:00                 # Max run time (hh:mm:ss)
+#SBATCH --time=02:00:00                 # Max run time (hh:mm:ss)
 #SBATCH --mem=250G                      # Memory per job
 #SBATCH --cpus-per-task=4               # Number of CPUs per job
 #SBATCH --gres=gpu:1
@@ -29,7 +29,7 @@ CUDA_VISIBLE_DEVICES=0 python \
     training/train.py --config training/configs/chronos-t5-small-distls.yaml \
     --training-data-paths "['preprocessing_training_data/zero_shot_datasets_train_val/train/$DATASET']" \
     --prediction-length $PRED_LEN \
-    --base-fname "run-$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID" \
+    --base-fname "run-$SLURM_ARRAY_TASK_ID" \
     --model-id amazon/chronos-t5-small \
     --no-random-init \
     --max-steps 1000 \
