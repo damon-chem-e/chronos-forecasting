@@ -715,6 +715,7 @@ def main(
         torch_compile=torch_compile,
         ddp_find_unused_parameters=False,
         remove_unused_columns=False,
+        dataloader_pin_memory=False
     )
 
     trainer = DistLSTrainer(
