@@ -64,4 +64,8 @@ class DistLS(torch.nn.Module):
         result = probs.view(result_shape)
         result = result.permute(0, -1, *range(1, result.ndim-1))  # Move new dimension C to be the 2nd dimension
 
+        if not hasattr(self, 'printed_once'):
+            print("LABELS IN DISTLS: ", labels.shape, labels)
+            print("PROBS IN DISTLS: ", result.shape, torch.argmax(result, dim=1))
+
         return result
