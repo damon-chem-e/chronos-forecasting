@@ -312,7 +312,9 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         imputation_method: Optional[MissingValueImputation] = None,
         mode: str = "training",
         np_dtype=np.float32,
-        distls: DistLS = None
+        distls: DistLS = None,
+        temp_pad_id: int = 100,
+        temp_eos_id: int = -999
     ) -> None:
         super().__init__()
 
@@ -332,6 +334,8 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
         self.mode = mode
         self.np_dtype = np_dtype
         self.distls = distls
+        self.temp_pad_id = temp_pad_id
+        self.temp_eos_id = temp_eos_id
 
     def preprocess_entry(self, entry: dict, mode: str) -> dict:
         entry = {f: entry[f] for f in ["start", "target"]}
@@ -403,7 +407,12 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             past_target
         )
         future_target = torch.tensor(entry["future_target"]).unsqueeze(0)
-        labels, non_q_labels, labels_mask = self.tokenizer.non_quantized_label_input_transform(future_target, scale)
+        labels, non_q_labels, labels_mask = self.tokenizer.non_quantized_label_input_transform(
+            future_target, 
+            scale, 
+            temp_pad_id=self.temp_pad_id,
+            temp_eos_id=self.temp_eos_id)
+        
         labels[labels_mask == 0] = -100
         non_q_labels[labels_mask == 0] = -100
         
@@ -563,6 +572,8 @@ def main(
     n_special_tokens: int = 2,
     pad_token_id: int = 0,
     eos_token_id: int = 1,
+    temp_pad_id: int = 100,
+    temp_eos_id: int = -999,
     use_eos_token: bool = True,
     lr_scheduler_type: str = "linear",
     warmup_ratio: float = 0.0,
@@ -686,7 +697,7 @@ def main(
     if use_distls:
         distls = DistLS(boundaries=tokenizer.boundaries, 
                         variance=distls_variance,
-                        special_tokens=[pad_token_id, eos_token_id, -100])
+                        special_tokens=[temp_pad_id, temp_eos_id, -100])
 
     shuffled_train_dataset = ChronosDataset(
         datasets=train_datasets,
@@ -698,7 +709,9 @@ def main(
         model_type=model_type,
         imputation_method=LastValueImputation() if model_type == "causal" else None,
         mode="training",
-        distls=distls if use_distls else None
+        distls=distls if use_distls else None,
+        temp_pad_id=temp_pad_id,
+        temp_eos_id=temp_eos_id
     ).shuffle(shuffle_buffer_length=shuffle_buffer_length)
 
     # Define training args

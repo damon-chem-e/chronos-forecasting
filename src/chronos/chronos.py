@@ -154,7 +154,7 @@ class ChronosTokenizer:
         raise NotImplementedError()
     
     def non_quantized_label_input_transform(
-        self, label: torch.Tensor, scale: torch.Tensor
+        self, label: torch.Tensor, scale: torch.Tensor, temp_pad_id: int, temp_eos_id: int
     ) -> Tuple:
         raise NotImplementedError()
 
@@ -206,10 +206,15 @@ class MeanScaleUniformBins(ChronosTokenizer):
         return token_ids, attention_mask, scale
 
     def _append_eos_token(
-        self, token_ids: torch.Tensor, attention_mask: torch.Tensor
+        self, token_ids: torch.Tensor, attention_mask: torch.Tensor, temp_eos_token
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         batch_size = token_ids.shape[0]
-        eos_tokens = torch.full((batch_size, 1), fill_value=self.config.eos_token_id)
+        
+        if temp_eos_token is None:
+            eos_tokens = torch.full((batch_size, 1), fill_value=self.config.eos_token_id)
+        else: 
+            eos_tokens = torch.full((batch_size, 1), fill_value=temp_eos_token)
+            
         token_ids = torch.concat((token_ids, eos_tokens), dim=1)
         eos_mask = torch.full((batch_size, 1), fill_value=True)
         attention_mask = torch.concat((attention_mask, eos_mask), dim=1)
@@ -249,19 +254,13 @@ class MeanScaleUniformBins(ChronosTokenizer):
         return token_ids, attention_mask
     
     def non_quantized_label_input_transform(
-        self, label: torch.Tensor, scale: torch.Tensor
+        self, label: torch.Tensor, scale: torch.Tensor, temp_pad_id: int, temp_eos_id: int
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         length = label.shape[-1]
 
         assert length == self.config.prediction_length
         context = label.to(dtype=torch.float32)
         raw_attention_mask = ~torch.isnan(context)
-
-        if scale is None:
-            scale = torch.nansum(
-                torch.abs(context) * raw_attention_mask, dim=-1
-            ) / torch.nansum(raw_attention_mask, dim=-1)
-            scale[~(scale > 0)] = 1.0
 
         scaled_context = context / scale.unsqueeze(dim=-1)
         token_ids = (
@@ -275,6 +274,7 @@ class MeanScaleUniformBins(ChronosTokenizer):
 
         token_ids.clamp_(0, self.config.n_tokens - 1)
         token_ids[~raw_attention_mask] = self.config.pad_token_id
+        scaled_context[~raw_attention_mask] = temp_pad_id
 
         if self.config.use_eos_token:
             token_ids, attention_mask = self._append_eos_token(
@@ -282,7 +282,7 @@ class MeanScaleUniformBins(ChronosTokenizer):
             )
             
             non_q_labels, _ = self._append_eos_token(
-                token_ids=scaled_context, attention_mask=raw_attention_mask
+                token_ids=scaled_context, attention_mask=raw_attention_mask, temp_eos_token=temp_eos_id
             )
 
         return token_ids, non_q_labels, attention_mask
