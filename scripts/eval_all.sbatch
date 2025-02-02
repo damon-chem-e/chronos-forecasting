@@ -4,8 +4,8 @@
 #SBATCH --output=output_%A_%a.out       # Standard output log (%A = Job ID, %a = Array index)
 #SBATCH --error=error_%A_%a.err         # Standard error log
 #SBATCH --array=0-26                    # Array range (adjust based on the number of arguments)
-#SBATCH --time=01:00:00                 # Max run time (hh:mm:ss)
-#SBATCH --mem=8G                        # Memory per job
+#SBATCH --time=01:30:00                 # Max run time (hh:mm:ss)
+#SBATCH --mem=128G                      # Memory per job
 #SBATCH --cpus-per-task=4               # Number of CPUs per job
 #SBATCH --gres=gpu:1
 
@@ -24,8 +24,8 @@ source activate chronos2
 # Read dataset name from dataset_names.txt based on array task ID
 DATASET_NAME=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" dataset_names.txt)
 
-python evaluation/evaluate.py evaluation/configs/zero-shot.yaml evaluation/results/finetune-ce/$DATASET_NAME-$SLURM_ARRAY_TASK_ID.csv \
-    --chronos-model-id "output/run-$SLURM_ARRAY_TASK_ID/checkpoint-final" \
+python evaluation/evaluate.py evaluation/configs/zero-shot.yaml evaluation/results/finetune-distls/$DATASET_NAME-$SLURM_ARRAY_TASK_ID.csv \
+    --chronos-model-id "output/run-$SLURM_ARRAY_TASK_ID-0/checkpoint-final" \
     --batch-size=32 \
     --device=cuda:0 \
     --num-samples 20
