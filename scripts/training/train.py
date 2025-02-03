@@ -48,6 +48,8 @@ from gluonts.transform import (
 
 from chronos import ChronosConfig, ChronosTokenizer
 
+import pickle
+from pathlib import Path
 
 app = typer.Typer(pretty_exceptions_enable=False)
 
@@ -521,16 +523,15 @@ class DebugTrainer(Trainer):
 
         # Save every 10th call
         if self._compute_loss_counter % 10 == 0:
-            import pickle
-            from pathlib import Path
             
             # Append current outputs to list
             self._debug_outputs.append({
                 "step": self._compute_loss_counter,
                 "logits": logits.detach().cpu().numpy(),
-                "outputs": outputs.logits.detach().cpu().numpy()
+                "labels": labels.detach().cpu().numpy()
             })
             
+        if self._compute_loss_counter % 1000 == 0:
             # Save entire list to pickle file
             with open("debug_outputs.pkl", "wb") as f:
                 pickle.dump(self._debug_outputs, f)
