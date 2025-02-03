@@ -500,6 +500,20 @@ class ChronosDataset(IterableDataset, ShuffleMixin):
             for entry in itertools.chain(*iterators):
                 yield self.to_hf_format(entry)
 
+class DebugTrainer(Trainer):
+    def __init__(self, *args, **kwargs):
+        self.cross_entropy_loss = torch.nn.CrossEntropyLoss()
+        super().__init__(*args, **kwargs)
+    
+    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        outputs = model(input_ids=inputs.get('input_ids'), 
+                        attention_mask=inputs.get('attention_mask'), 
+                        labels=inputs.get('labels'))
+        logits = outputs.logits
+        print(logits.shape, outputs.shape)
+        loss = self.cross_entropy_loss(logits, outputs)
+        
+        return (loss, outputs) if return_outputs else loss
 
 @app.command()
 @use_yaml_config(param_name="config")
@@ -683,7 +697,7 @@ def main(
     )
 
     # Create Trainer instance
-    trainer = Trainer(
+    trainer = DebugTrainer(
         model=model,
         args=training_args,
         train_dataset=shuffled_train_dataset,
