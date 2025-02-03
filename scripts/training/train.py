@@ -524,10 +524,6 @@ class DebugTrainer(Trainer):
             import pickle
             from pathlib import Path
             
-            # Create output directory if it doesn't exist
-            save_dir = Path(self.args.output_dir) / "debug_outputs"
-            save_dir.mkdir(exist_ok=True, parents=True)
-            
             # Append current outputs to list
             self._debug_outputs.append({
                 "step": self._compute_loss_counter,
@@ -536,8 +532,7 @@ class DebugTrainer(Trainer):
             })
             
             # Save entire list to pickle file
-            save_path = save_dir / "debug_outputs.pkl"
-            with open(save_path, "wb") as f:
+            with open("debug_outputs.pkl", "wb") as f:
                 pickle.dump(self._debug_outputs, f)
                 
         return (loss, outputs) if return_outputs else loss
