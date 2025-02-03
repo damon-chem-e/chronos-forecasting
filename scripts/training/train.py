@@ -507,11 +507,9 @@ class DebugTrainer(Trainer):
     
     def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
         labels = inputs.get('labels')
-        outputs = model(input_ids=inputs.get('input_ids'), 
-                        attention_mask=inputs.get('attention_mask'), 
-                        labels=labels)
-        logits = outputs.logits
-        print(logits.shape, labels.shape)
+        outputs = model(**inputs)
+        logits = outputs.logits.transpose(1, 2)
+        print(logits.shape, labels.shape) # ([32, 5, 4096]) torch.Size([32, 5])
         loss = self.cross_entropy_loss(logits, labels)
         
         # ========== Track number of calls using class attribute if not exists ===========
