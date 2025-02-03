@@ -1,5 +1,5 @@
 training_data_paths:
-- "preprocessing_training_data/zero_shot_datasets_train_val/train/monash_tourism_yearly.arrow"
+- "preprocessing_training_data/zero_shot_datasets_train_val/train/dominick.arrow"
 
 probability:
 - 1.0
