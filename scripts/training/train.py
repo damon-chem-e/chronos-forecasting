@@ -46,8 +46,8 @@ from gluonts.transform import (
     LastValueImputation,
 )
 
-from chronos import ChronosConfig, ChronosTokenizer
-
+# from chronos import ChronosConfig, ChronosTokenizer
+from src.chronos.chronos_bolt import ChronosBoltConfig
 
 app = typer.Typer(pretty_exceptions_enable=False)
 
@@ -540,7 +540,21 @@ def main(
     top_k: int = 50,
     top_p: float = 1.0,
     seed: Optional[int] = None,
-    base_fname: str = "run"
+    base_fname: str = "run",
+    input_patch_size: int = 16,
+    input_patch_stride: int = 16,
+    quantiles: list[float] = [
+                                0.1,
+                                0.2,
+                                0.3,
+                                0.4,
+                                0.5,
+                                0.6,
+                                0.7,
+                                0.8,
+                                0.9
+                            ],
+    use_reg_token: bool=False
 ):
     log_on_main(f"Using prediction length: {prediction_length}", logger)
     if tf32 and not (
@@ -627,22 +641,31 @@ def main(
         eos_token_id=eos_token_id,
     )
 
-    chronos_config = ChronosConfig(
-        tokenizer_class=tokenizer_class,
-        tokenizer_kwargs=tokenizer_kwargs,
-        n_tokens=n_tokens,
-        n_special_tokens=n_special_tokens,
-        pad_token_id=pad_token_id,
-        eos_token_id=eos_token_id,
-        use_eos_token=use_eos_token,
-        model_type=model_type,
+    chronos_bolt_config = ChronosBoltConfig(
         context_length=context_length,
         prediction_length=prediction_length,
-        num_samples=num_samples,
-        temperature=temperature,
-        top_k=top_k,
-        top_p=top_p,
+        input_patch_size=input_patch_size,
+        input_patch_stride=input_patch_stride,
+        quantiles=quantiles,
+        use_reg_token=use_reg_token
     )
+    
+    # chronos_config = ChronosConfig(
+    #     tokenizer_class=tokenizer_class,
+    #     tokenizer_kwargs=tokenizer_kwargs,
+    #     n_tokens=n_tokens,
+    #     n_special_tokens=n_special_tokens,
+    #     pad_token_id=pad_token_id,
+    #     eos_token_id=eos_token_id,
+    #     use_eos_token=use_eos_token,
+    #     model_type=model_type,
+    #     context_length=context_length,
+    #     prediction_length=prediction_length,
+    #     num_samples=num_samples,
+    #     temperature=temperature,
+    #     top_k=top_k,
+    #     top_p=top_p,
+    # )
 
     # Add extra items to model config so that it's saved in the ckpt
     model.config.chronos_config = chronos_config.__dict__
