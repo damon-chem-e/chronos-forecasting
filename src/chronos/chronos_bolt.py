@@ -155,7 +155,8 @@ class ChronosBoltModelForForecasting(T5PreTrainedModel):
         if self.chronos_config.use_reg_token:
             config.reg_token_id = 1
 
-        config.vocab_size = 2 if self.chronos_config.use_reg_token else 1
+        # config.vocab_size = 2 if self.chronos_config.use_reg_token else 1
+        config.vocab_size = 4096 if self.chronos_config.use_reg_token else 4095
         self.shared = nn.Embedding(config.vocab_size, config.d_model)
 
         # Input patch embedding layer
