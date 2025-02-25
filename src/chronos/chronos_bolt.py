@@ -560,7 +560,7 @@ class ChronosBoltPipeline(BaseChronosPipeline):
             context_tensor = torch.cat([context_tensor, central_prediction], dim=-1)
 
         return torch.cat(predictions, dim=-1)[..., :prediction_length].to(
-            dtype=torch.float32, device=self.model.device
+            dtype=torch.float32, device="cpu"
         )
 
     def predict_quantiles(
