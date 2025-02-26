@@ -19,8 +19,8 @@ source /home/adewinmb/.bashrc
 source activate chronos2
 
 CUDA_VISIBLE_DEVICES=0 python \
-    training/train.py --config training/configs/chronos-t5-small.yaml \
-    --model-id amazon/chronos-t5-small \
+    training/train.py --config training/configs/chronos-bolt-small.yaml \
+    --model-id autogluon/chronos-bolt-small \
     --no-random-init \
     --prediction-length 4 \
     --max-steps 1000 \
