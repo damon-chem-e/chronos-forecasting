@@ -46,8 +46,7 @@ from gluonts.transform import (
     LastValueImputation,
 )
 
-from chronos import ChronosConfig, ChronosTokenizer
-from src.chronos.chronos_bolt import ChronosBoltConfig
+from chronos import ChronosConfig, ChronosTokenizer, ChronosBoltConfig
 
 app = typer.Typer(pretty_exceptions_enable=False)
 
